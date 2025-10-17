@@ -1,0 +1,26 @@
+<!-- File: views/login.ejs -->
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Admin Login</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <h2>Admin Login</h2>
+    <% if (error) { %>
+    <p style="color: red"><%= error %></p>
+    <% } %>
+    <form method="POST" action="/admin/login">
+      <label>Username:</label>
+      <input type="text" name="username" required /><br />
+
+      <label>Password:</label>
+      <input type="password" name="password" required /><br />
+
+      <label> <input type="checkbox" name="remember" /> Remember Me </label
+      ><br />
+
+      <button type="submit">Login</button>
+    </form>
+  </body>
+</html>

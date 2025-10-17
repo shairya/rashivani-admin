@@ -1,0 +1,73 @@
+<!-- File: views/articles/list.ejs -->
+<h2>Articles</h2>
+<a href="/admin/articles/new">Add Article</a>
+<a href="/admin/export/articles/csv">Export Articles (CSV)</a>
+<form method="GET" action="/admin/articles">
+  <input type="text" name="q" placeholder="Search title..." value="<%= filters.q %>">
+  <select name="status">
+    <option value="">All Status</option>
+    <option value="draft" <%= filters.status === 'draft' ? 'selected' : '' %>>Draft</option>
+    <option value="published" <%= filters.status === 'published' ? 'selected' : '' %>>Published</option>
+  </select>
+  <select name="categoryId">
+    <option value="">All Categories</option>
+    <% categories.forEach(cat => { %>
+      <option value="<%= cat.id %>" <%= filters.categoryId == cat.id ? 'selected' : '' %>><%= cat.name %></option>
+    <% }) %>
+  </select>
+  <select name="subCategoryId">
+    <option value="">All Sub-Categories</option>
+    <% subcategories.forEach(sub => { %>
+      <option value="<%= sub.id %>" <%= filters.subCategoryId == sub.id ? 'selected' : '' %>><%= sub.name %></option>
+    <% }) %>
+  </select>
+  <button type="submit">Filter</button>
+</form>
+<!-- <form method="POST" action="/admin/articles/bulk-action">
+  <input type="hidden" name="action" id="bulk-action-type">
+  <ul>
+    <% if (articles && articles.length > 0) { %>
+      <% articles.forEach(article => { %>
+        <li>
+          <input type="checkbox" name="selectedIds" value="<%= article.id %>">
+          <strong><%= article.title %></strong> - <%= article.status %>
+        </li>
+      <% }) %>
+    <% } %>
+  </ul>
+  <button type="button" onclick="setBulkAction('publish')">Publish Selected</button>
+  <button type="button" onclick="setBulkAction('delete')">Delete Selected</button>
+</form> -->
+
+<ul>
+  <% if (articles && articles.length > 0) { %>
+    <% articles.forEach(article => { %>
+    <li>
+      <strong><%= article.title %></strong> - <%= article.status %> (<%=
+      article.Category?.name %> / <%= article.SubCategory?.name %>)
+      <a href="/admin/articles/edit/<%= article.id %>">Edit</a>
+      <form method="POST" action="/admin/articles/toggle-status/<%= article.id %>">
+        <button type="submit">
+          Toggle to <%= article.status === 'draft' ? 'Published' : 'Draft' %>
+        </button>
+      </form>
+    </li>
+    <% }) %>
+  <% } %>
+</ul>
+<div>
+  <% if(articles.length > pagination.limit) { %>
+    <% for (let i = 1; i <= pagination.totalPages; i++) { %>
+      <a href="?page=<%= i %>&<%= new URLSearchParams(filters).toString() %>">
+        <%= i === pagination.page ? `<strong>${i}</strong>` : i %>
+      </a>
+    <% } %>
+  <% } %>
+</div>
+<script>
+  function setBulkAction(action) {
+    document.getElementById('bulk-action-type').value = action;
+    document.forms[0].submit();
+  }
+</script>
+

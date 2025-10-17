@@ -1,0 +1,10 @@
+<!-- File: views/categories/form.ejs -->
+<h2><%= category ? 'Edit' : 'Create' %> Category</h2>
+<form method="POST" action="/admin/categories/save">
+  <% if (category) { %>
+    <input type="hidden" name="id" value="<%= category.id %>">
+  <% } %>
+  <label>Name:</label>
+  <input type="text" name="name" value="<%= category ? category.name : '' %>" required>
+  <button type="submit">Save</button>
+</form>

@@ -1,0 +1,11 @@
+<!-- File: views/categories/list.ejs -->
+<h2>Categories</h2>
+<a href="/admin/categories/new">Add Category</a>
+<ul>
+  <% categories.forEach(cat => { %>
+  <li>
+    <%= cat.name %> (<%= cat.slug %>)
+    <a href="/admin/categories/edit/<%= cat.id %>">Edit</a>
+  </li>
+  <% }) %>
+</ul>

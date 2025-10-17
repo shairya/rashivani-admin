@@ -1,0 +1,11 @@
+<!-- File: views/users/list.ejs -->
+<h2>Users</h2>
+<a href="/admin/export/users/pdf">Export Users (PDF)</a>
+<ul>
+  <% users.forEach(user => { %>
+  <li>
+    <strong><%= user.username %></strong> - <%= user.role %>
+    <small>Created: <%= user.createdAt.toLocaleDateString() %></small>
+  </li>
+  <% }) %>
+</ul>

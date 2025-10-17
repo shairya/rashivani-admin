@@ -1,0 +1,83 @@
+<!-- File: views/articles/form.ejs -->
+<h2><%= article ? 'Edit' : 'Create' %> Article</h2>
+<form method="POST" action="/admin/articles/save">
+  <% if (article) { %>
+    <input type="hidden" name="id" value="<%= article.id %>">
+  <% } %>
+
+  <label>Title:</label>
+  <input type="text" name="title" value="<%= article?.title || '' %>" required>
+
+  <label>Slug:</label>
+  <input type="text" name="slug" value="<%= article?.slug || '' %>" required>
+
+  <label>Content:</label>
+  <textarea name="content" id="editor"><%= article?.content || '' %></textarea>
+
+  <label>Tags (comma-separated):</label>
+  <input type="text" name="tags" value="<%= article?.tags || '' %>">
+
+  <label>Author:</label>
+  <input type="text" name="author" value="<%= article?.author || '' %>">
+
+  <label>Status:</label>
+  <select name="status">
+    <option value="draft" <%= article?.status === 'draft' ? 'selected' : '' %>>Draft</option>
+    <option value="published" <%= article?.status === 'published' ? 'selected' : '' %>>Published</option>
+  </select>
+
+  <label>Publish Date:</label>
+  <input type="date" name="publishDate" value="<%= article?.publishDate?.toISOString().split('T')[0] || '' %>">
+
+  <label>Category:</label>
+  <select name="categoryId" required>
+    <% categories.forEach(cat => { %>
+      <option value="<%= cat.id %>" <%= article?.categoryId === cat.id ? 'selected' : '' %>><%= cat.name %></option>
+    <% }) %>
+  </select>
+
+  <label>Sub-Category:</label>
+  <select name="subCategoryId" required>
+    <% subcategories.forEach(sub => { %>
+      <option value="<%= sub.id %>" <%= article?.subCategoryId === sub.id ? 'selected' : '' %>><%= sub.name %></option>
+    <% }) %>
+  </select>
+  <label>Schedule Publish Date:</label>
+  <input type="datetime-local" name="scheduledPublishDate" value="<%= article?.scheduledPublishDate?.toISOString().slice(0,16) || '' %>">
+  
+  <button type="submit">Save</button>
+</form>
+<h3>Upload Media</h3>
+<form method="POST" action="/api/media/upload/<%= article?.id %>" enctype="multipart/form-data">
+  <input type="file" name="media" multiple required><br>
+  <label>Captions (comma-separated):</label>
+  <input type="text" name="captions"><br>
+  <label>Alt Texts (comma-separated):</label>
+  <input type="text" name="altTexts"><br>
+  <button type="submit">Upload</button>
+</form>
+
+<h3>Media Gallery</h3>
+<ul>
+  <% if(media && media.length > 0) { %>
+    <% media.forEach(m => { %>
+      <li>
+        <% if (m.type === 'image') { %>
+          <img src="<%= m.url %>" alt="<%= m.altText %>" width="100"><br>
+        <% } else { %>
+          <video src="<%= m.url %>" width="200" controls></video><br>
+        <% } %>
+        <strong>Caption:</strong> <%= m.caption %><br>
+        <strong>Alt Text:</strong> <%= m.altText %><br>
+        <form method="POST" action="/api/media/<%= m.id %>?_method=DELETE">
+          <button type="submit">Delete</button>
+        </form>
+      </li>
+    <% }) %>
+  <% } %>
+</ul>
+<script>
+  ClassicEditor.create(document.querySelector('#editor')).catch(error => {
+    console.error(error);
+  });
+</script>

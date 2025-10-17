@@ -1,0 +1,11 @@
+<!-- File: views/subcategories/list.ejs -->
+<h2>Sub-Categories</h2>
+<a href="/admin/subcategories/new">Add Sub-Category</a>
+<ul>
+  <% subcategories.forEach(sub => { %>
+  <li>
+    <%= sub.name %> (<%= sub.slug %>) - <%= sub.Category.name %>
+    <a href="/admin/subcategories/edit/<%= sub.id %>">Edit</a>
+  </li>
+  <% }) %>
+</ul>
