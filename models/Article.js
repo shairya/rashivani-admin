@@ -1,18 +1,30 @@
 // File: models/Article.js
 const { DataTypes } = require("sequelize");
 const sequelize = require("../config/db");
-// const Category = require("./Category");
-// const SubCategory = require("./SubCategory");
-// const ArticleMedia = require("./ArticleMedia");
 
 const Article = sequelize.define(
   "Article",
   {
     title: DataTypes.STRING,
+    sanskritTitle: DataTypes.STRING,
+    deity: DataTypes.STRING,
+    verseCount: DataTypes.INTEGER,
+    language: DataTypes.STRING,
+    benefits: DataTypes.TEXT,
     slug: { type: DataTypes.STRING, unique: true },
     content: DataTypes.TEXT,
     tags: DataTypes.STRING,
     author: DataTypes.STRING,
+    bestTime: DataTypes.STRING,
+    duration: DataTypes.STRING,
+    repetitions: DataTypes.STRING,
+    verses: DataTypes.STRING,
+    fullContent: DataTypes.STRING,
+    audioUrl: DataTypes.STRING,
+    imageUrl: DataTypes.STRING,
+    youtubeUrl: DataTypes.STRING,
+    relatedMantras: DataTypes.STRING,
+    festivals: DataTypes.STRING,
     status: DataTypes.ENUM("draft", "published"),
     publishDate: DataTypes.DATE,
     viewCount: { type: DataTypes.INTEGER, defaultValue: 0 },
@@ -24,13 +36,5 @@ const Article = sequelize.define(
     timestamps: true,
   }
 );
-
-// Relationships
-
-// Article.associate = (models) => {
-//   Article.belongsTo(Category, { foreignKey: "categoryId" });
-//   Article.belongsTo(SubCategory, { foreignKey: "subCategoryId" });
-//   Article.belongsTo(ArticleMedia, { foreignKey: "articleId" });
-// };
 
 module.exports = Article;

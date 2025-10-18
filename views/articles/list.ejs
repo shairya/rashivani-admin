@@ -46,7 +46,7 @@
     <li>
       <strong><%= article.title %></strong> - (<%=
       article.Category?.name %> / <%= article.SubCategory?.name %>) / <%= article.status %> 
-      <!-- <a href="/admin/articles/edit/<%= article.id %>">Edit</a> -->
+      <a href="/admin/articles/edit/<%= article.id %>">Edit</a>
       <form method="POST" action="/admin/articles/toggle-status/<%= article.id %>">
         <button type="submit">
           Toggle to <%= article.status === 'draft' ? 'Published' : 'Draft' %>

@@ -1,56 +1,23 @@
-<!-- File: views/dashboard.ejs -->
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>Admin Dashboard</title>
-    <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
-    <link rel="stylesheet" href="/styles.css" />
-  </head>
-  <body>
-    <% if(user) { %>
-      <a href="/admin/logout">Logout</a>
-    <% } else { %>
-      <a href="/admin/login">Login</a>
-    <% }%>
-    <h1>Welcome, <%= user.role %></h1>
-    <nav>
-      <ul>
-        <% if (user.role === 'admin') { %>
-          <li><a href="/admin/users">Manage Users</a></li>
-        <% } %>
-        <% if (['admin', 'editor'].includes(user.role)) { %>
-          <li><a href="/admin/categories">Manage Categories</a></li>
-        <% } %>
-        <% if (['admin', 'editor'].includes(user.role)) { %>
-          <li><a href="/admin/subcategories">Manage Sub-Categories</a></li>
-        <% } %>
-        <% if (['admin', 'editor'].includes(user.role)) { %>
-          <li><a href="/admin/articles">Manage Articles</a></li>
-        <% } %>
-      </ul>
-    </nav>
-    <h2>Dashboard Overview</h2>
-    <ul>
-      <li>Total Users: <%= stats.userCount %></li>
-      <li>Total Articles: <%= stats.articleCount %></li>
-      <liTotal Categories: <%= stats.categoryCount %></li>
-      <li>Total Sub-Categories: <%= stats.subCategoryCount %></li>
-    </ul>
+<h2>Dashboard Overview</h2>
+<ul>
+  <li>Total Users: <%= stats.userCount %></li>
+  <li>Total Articles: <%= stats.articleCount %></li>
+  <li>Total Categories: <%= stats.categoryCount %></li>
+  <li>Total Sub-Categories: <%= stats.subCategoryCount %></li>
+</ul>
 
-    <canvas id="statusChart" width="400" height="200"></canvas>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-      const ctx = document.getElementById('statusChart').getContext('2d');
-      const chart = new Chart(ctx, {
-        type: 'pie',
-        data: {
-          labels: <%= JSON.stringify(stats.statusStats.map(s => s.status)) %>,
-          datasets: [{
-            data: <%= JSON.stringify(stats.statusStats.map(s => s.count)) %>,
-            backgroundColor: ['#36A2EB', '#FF6384']
-          }]
-        }
-      });
-    </script>
-  </body>
-</html>
+<canvas id="statusChart" width="400" height="200"></canvas>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const ctx = document.getElementById('statusChart').getContext('2d');
+  const chart = new Chart(ctx, {
+    type: 'pie',
+    data: {
+      labels: <%= JSON.stringify(stats.statusStats.map(s => s.status)) %>,
+      datasets: [{
+        data: <%= JSON.stringify(stats.statusStats.map(s => s.count)) %>,
+        backgroundColor: ['#36A2EB', '#FF6384']
+      }]
+    }
+  });
+</script>

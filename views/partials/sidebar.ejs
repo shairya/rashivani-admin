@@ -1,0 +1,36 @@
+<div class="bg-light border-end vh-100 p-3" style="width: 250px">
+  <h5>Menu</h5>
+  <ul class="nav flex-column">
+    <li class="nav-item">
+      <a
+        class="nav-link <%= active === 'dashboard' ? 'active fw-bold text-primary' : '' %>"
+        href="/admin"
+        >Dashboard</a
+      >
+    </li>
+    <li class="nav-item">
+      <a
+        class="nav-link <%= active === 'articles' ? 'active fw-bold text-primary' : '' %>"
+        href="/admin/articles"
+        >Articles</a
+      >
+    </li>
+    <li class="nav-item">
+      <a
+        class="nav-link <%= active === 'categories' ? 'active fw-bold text-primary' : '' %>"
+        href="/admin/categories"
+        >Categories</a
+      >
+    </li>
+    <li class="nav-item">
+      <a
+        class="nav-link <%= active === 'subcategories' ? 'active fw-bold text-primary' : '' %>"
+        href="/admin/subcategories"
+        >Subcategories</a
+      >
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="/admin/logout">Logout</a>
+    </li>
+  </ul>
+</div>

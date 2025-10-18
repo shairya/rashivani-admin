@@ -29,6 +29,8 @@ router.get("/", auth, rbac(["admin"]), async (req, res) => {
   res.render("dashboard", {
     layout: "layout",
     title: "Dashboard",
+    active: "dashboard",
+    hideSidebar: false,
     user: req.user,
     stats: {
       userCount,
@@ -46,6 +48,8 @@ router.get("/categories", auth, rbac(["admin"]), async (req, res) => {
   res.render("categories/list", {
     layout: "layout",
     title: "Categories",
+    active: "categories",
+    hideSidebar: false,
     categories,
   });
 });
@@ -54,7 +58,9 @@ router.get("/categories/new", auth, rbac(["admin"]), (req, res) => {
   res.render("categories/form", {
     layout: "layout",
     title: "Create Category",
+    hideSidebar: false,
     category: null,
+    active: "categories",
   });
 });
 
@@ -63,6 +69,7 @@ router.get("/categories/edit/:id", auth, rbac(["admin"]), async (req, res) => {
   res.render("categories/form", {
     layout: "layout",
     title: "Edit Category",
+    hideSidebar: false,
     category,
   });
 });
@@ -76,7 +83,7 @@ router.post("/categories/save", auth, rbac(["admin"]), async (req, res) => {
   } else {
     await Category.create({ name, slug });
   }
-
+  req.flash("success", "Category saved successfully!");
   res.redirect("/admin/categories");
 });
 
@@ -90,6 +97,8 @@ router.get("/subcategories", auth, rbac(["admin"]), async (req, res) => {
   res.render("subcategories/list", {
     layout: "layout",
     title: "Cub Categories",
+    active: "subcategories",
+    hideSidebar: false,
     subcategories,
   });
 });
@@ -99,8 +108,10 @@ router.get("/subcategories/new", auth, rbac(["admin"]), async (req, res) => {
   res.render("subcategories/form", {
     layout: "layout",
     title: "Create Sub Category",
+    active: "subcategories",
     subcategory: null,
     categories,
+    hideSidebar: false,
   });
 });
 
@@ -116,6 +127,7 @@ router.get(
       title: "Edit Sub Category",
       subcategory,
       categories,
+      hideSidebar: false,
     });
   }
 );
@@ -129,7 +141,7 @@ router.post("/subcategories/save", auth, rbac(["admin"]), async (req, res) => {
   } else {
     await SubCategory.create({ name, slug, categoryId });
   }
-
+  req.flash("success", "SubCategory saved successfully!");
   res.redirect("/admin/subcategories");
 });
 
@@ -161,11 +173,13 @@ router.get("/articles", auth, rbac(["admin", "editor"]), async (req, res) => {
   res.render("articles/list", {
     layout: "layout",
     title: "Articles",
+    active: "articles",
     articles,
     categories,
     subcategories,
     filters: req.query,
     pagination: { page: parseInt(page), totalPages, limit },
+    hideSidebar: false,
   });
 });
 
@@ -180,10 +194,12 @@ router.get(
     res.render("articles/form", {
       layout: "layout",
       title: "Create Article",
+      active: "articles",
       article: null,
       categories,
       subcategories,
       media,
+      hideSidebar: false,
     });
   }
 );
@@ -196,12 +212,16 @@ router.get(
     const article = await Article.findByPk(req.params.id);
     const categories = await Category.findAll();
     const subcategories = await SubCategory.findAll();
+    const media = await ArticleMedia.findAll({ logging: console.log });
     res.render("articles/form", {
       layout: "layout",
       title: "Edit Article",
       article,
       categories,
       subcategories,
+      media,
+      active: "articles",
+      hideSidebar: false,
     });
   }
 );
@@ -217,10 +237,25 @@ router.post(
     const {
       id,
       title,
+      sanskritTitle,
+      deity,
+      author,
+      verseCount,
+      language,
+      benefits,
       slug,
       content,
+      bestTime,
+      duration,
+      repetitions,
+      verses,
+      fullContent,
+      audioUrl,
+      imageUrl,
+      youtubeUrl,
+      relatedMantras,
+      festivals,
       tags,
-      author,
       status,
       categoryId,
       subCategoryId,
@@ -230,10 +265,25 @@ router.post(
       await Article.update(
         {
           title,
+          sanskritTitle,
+          deity,
+          author,
+          verseCount,
+          language,
+          benefits,
           slug,
           content,
+          bestTime,
+          duration,
+          repetitions,
+          verses,
+          fullContent,
+          audioUrl,
+          imageUrl,
+          youtubeUrl,
+          relatedMantras,
+          festivals,
           tags,
-          author,
           status,
           publishDate,
           categoryId,
@@ -247,6 +297,16 @@ router.post(
         title,
         slug,
         content,
+        bestTime,
+        duration,
+        repetitions,
+        verses,
+        fullContent,
+        audioUrl,
+        imageUrl,
+        youtubeUrl,
+        relatedMantras,
+        festivals,
         tags,
         author,
         status,
@@ -256,7 +316,7 @@ router.post(
         scheduledPublishDate,
       });
     }
-
+    req.flash("success", "Article saved successfully!");
     res.redirect("/admin/articles");
   }
 );
@@ -280,6 +340,7 @@ router.get(
       categories,
       subcategories,
       media,
+      hideSidebar: false,
     });
   }
 );
@@ -325,7 +386,13 @@ router.post(
 
 // Login
 router.get("/login", (req, res) => {
-  res.render("login", { error: null });
+  res.render("login", {
+    layout: "layout",
+    title: "Login",
+    active: "Login",
+    hideSidebar: true,
+    error: null,
+  });
 });
 
 router.post("/login", async (req, res) => {
@@ -341,6 +408,7 @@ router.post("/login", async (req, res) => {
       layout: "layout",
       title: "Login",
       error: "Access denied",
+      hideSidebar: true,
     });
   }
 
@@ -385,7 +453,12 @@ router.post("/register", async (req, res) => {
 // User Managements
 router.get("/users", auth, rbac(["admin"]), async (req, res) => {
   const users = await User.findAll({ order: [["createdAt", "DESC"]] });
-  res.render("users/list", { layout: "layout", title: "Users", users });
+  res.render("users/list", {
+    layout: "layout",
+    title: "Users",
+    users,
+    hideSidebar: false,
+  });
 });
 
 // CSV

@@ -1,26 +1,29 @@
-<!-- File: views/login.ejs -->
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>Admin Login</title>
-    <link rel="stylesheet" href="/styles.css" />
-  </head>
-  <body>
-    <h2>Admin Login</h2>
-    <% if (error) { %>
-    <p style="color: red"><%= error %></p>
-    <% } %>
-    <form method="POST" action="/admin/login">
-      <label>Username:</label>
-      <input type="text" name="username" required /><br />
+<div class="login-box">
+  <h2 class="text-center mb-4">RashiVani</h2>
+  <h4 class="text-center mb-4">Admin Login</h4>
 
-      <label>Password:</label>
-      <input type="password" name="password" required /><br />
+  <% if (error) { %>
+  <p style="color: red"><%= error %></p>
+  <% } %>
+  <form method="POST" action="/admin/login">
+    <div class="mb-3">
+      <label for="username" class="form-label">Username:</label>
+      <input class="form-control" type="text" name="username" required />
+    </div>
+    <div class="mb-3">
+      <label for="password" class="form-label">Password:</label>
+      <input class="form-control" type="password" name="password" required />
+    </div>
+    <div class="mb-3 form-check">
+      <input
+        type="checkbox"
+        name="remember"
+        id="remember"
+        class="form-check-input"
+      />
+      <label class="form-check-label" for="remember">Remember me</label>
+    </div>
 
-      <label> <input type="checkbox" name="remember" /> Remember Me </label
-      ><br />
-
-      <button type="submit">Login</button>
-    </form>
-  </body>
-</html>
+    <button type="submit" class="btn btn-primary w-100">Login</button>
+  </form>
+</div>

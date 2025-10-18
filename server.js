@@ -2,12 +2,22 @@
 require("dotenv").config();
 require("./cron/scheduler");
 const express = require("express");
-// const sequelize = require("./config/db");
+const session = require("express-session");
+const flash = require("express-flash");
 const cookieParser = require("cookie-parser");
 const { sequelize } = require("./models");
 const expressLayouts = require("express-ejs-layouts");
 
 const app = express();
+app.use(
+  session({
+    secret: "rashivani-secret",
+    resave: false,
+    saveUninitialized: true,
+  })
+);
+app.use(flash());
+
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.static("public"));
