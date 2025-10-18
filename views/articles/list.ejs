@@ -1,5 +1,6 @@
 <!-- File: views/articles/list.ejs -->
-<h2>Articles</h2>
+<h2><%= title %></h2>
+
 <a href="/admin/articles/new">Add Article</a>
 <a href="/admin/export/articles/csv">Export Articles (CSV)</a>
 <form method="GET" action="/admin/articles">
@@ -43,9 +44,9 @@
   <% if (articles && articles.length > 0) { %>
     <% articles.forEach(article => { %>
     <li>
-      <strong><%= article.title %></strong> - <%= article.status %> (<%=
-      article.Category?.name %> / <%= article.SubCategory?.name %>)
-      <a href="/admin/articles/edit/<%= article.id %>">Edit</a>
+      <strong><%= article.title %></strong> - (<%=
+      article.Category?.name %> / <%= article.SubCategory?.name %>) / <%= article.status %> 
+      <!-- <a href="/admin/articles/edit/<%= article.id %>">Edit</a> -->
       <form method="POST" action="/admin/articles/toggle-status/<%= article.id %>">
         <button type="submit">
           Toggle to <%= article.status === 'draft' ? 'Published' : 'Draft' %>

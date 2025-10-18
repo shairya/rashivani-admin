@@ -27,6 +27,8 @@ router.get("/", auth, rbac(["admin"]), async (req, res) => {
   });
 
   res.render("dashboard", {
+    layout: "layout",
+    title: "Dashboard",
     user: req.user,
     stats: {
       userCount,
@@ -41,16 +43,28 @@ router.get("/", auth, rbac(["admin"]), async (req, res) => {
 // Categories
 router.get("/categories", auth, rbac(["admin"]), async (req, res) => {
   const categories = await Category.findAll();
-  res.render("categories/list", { categories });
+  res.render("categories/list", {
+    layout: "layout",
+    title: "Categories",
+    categories,
+  });
 });
 
 router.get("/categories/new", auth, rbac(["admin"]), (req, res) => {
-  res.render("categories/form", { category: null });
+  res.render("categories/form", {
+    layout: "layout",
+    title: "Create Category",
+    category: null,
+  });
 });
 
 router.get("/categories/edit/:id", auth, rbac(["admin"]), async (req, res) => {
   const category = await Category.findByPk(req.params.id);
-  res.render("categories/form", { category });
+  res.render("categories/form", {
+    layout: "layout",
+    title: "Edit Category",
+    category,
+  });
 });
 
 router.post("/categories/save", auth, rbac(["admin"]), async (req, res) => {
@@ -73,12 +87,21 @@ router.get("/subcategories", auth, rbac(["admin"]), async (req, res) => {
     order: [["createdAt", "DESC"]],
   });
 
-  res.render("subcategories/list", { subcategories });
+  res.render("subcategories/list", {
+    layout: "layout",
+    title: "Cub Categories",
+    subcategories,
+  });
 });
 
 router.get("/subcategories/new", auth, rbac(["admin"]), async (req, res) => {
   const categories = await Category.findAll();
-  res.render("subcategories/form", { subcategory: null, categories });
+  res.render("subcategories/form", {
+    layout: "layout",
+    title: "Create Sub Category",
+    subcategory: null,
+    categories,
+  });
 });
 
 router.get(
@@ -88,7 +111,12 @@ router.get(
   async (req, res) => {
     const subcategory = await SubCategory.findByPk(req.params.id);
     const categories = await Category.findAll();
-    res.render("subcategories/form", { subcategory, categories });
+    res.render("subcategories/form", {
+      layout: "layout",
+      title: "Edit Sub Category",
+      subcategory,
+      categories,
+    });
   }
 );
 
@@ -131,6 +159,8 @@ router.get("/articles", auth, rbac(["admin", "editor"]), async (req, res) => {
   const subcategories = await SubCategory.findAll();
 
   res.render("articles/list", {
+    layout: "layout",
+    title: "Articles",
     articles,
     categories,
     subcategories,
@@ -148,6 +178,8 @@ router.get(
     const subcategories = await SubCategory.findAll();
     const media = await ArticleMedia.findAll({ logging: console.log });
     res.render("articles/form", {
+      layout: "layout",
+      title: "Create Article",
       article: null,
       categories,
       subcategories,
@@ -164,7 +196,13 @@ router.get(
     const article = await Article.findByPk(req.params.id);
     const categories = await Category.findAll();
     const subcategories = await SubCategory.findAll();
-    res.render("articles/form", { article, categories, subcategories });
+    res.render("articles/form", {
+      layout: "layout",
+      title: "Edit Article",
+      article,
+      categories,
+      subcategories,
+    });
   }
 );
 
@@ -235,7 +273,14 @@ router.get(
       where: { articleId: article.id },
     });
 
-    res.render("articles/form", { article, categories, subcategories, media });
+    res.render("articles/form", {
+      layout: "layout",
+      title: "Edit Article",
+      article,
+      categories,
+      subcategories,
+      media,
+    });
   }
 );
 
@@ -292,7 +337,11 @@ router.post("/login", async (req, res) => {
   }
 
   if (!["admin", "editor"].includes(user.role)) {
-    return res.render("login", { error: "Access denied" });
+    return res.render("login", {
+      layout: "layout",
+      title: "Login",
+      error: "Access denied",
+    });
   }
 
   const token = jwt.sign({ id: user.id, role: user.role }, secret, {
@@ -336,7 +385,7 @@ router.post("/register", async (req, res) => {
 // User Managements
 router.get("/users", auth, rbac(["admin"]), async (req, res) => {
   const users = await User.findAll({ order: [["createdAt", "DESC"]] });
-  res.render("users/list", { users });
+  res.render("users/list", { layout: "layout", title: "Users", users });
 });
 
 // CSV

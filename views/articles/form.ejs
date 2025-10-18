@@ -1,5 +1,5 @@
 <!-- File: views/articles/form.ejs -->
-<h2><%= article ? 'Edit' : 'Create' %> Article</h2>
+<h2><%= title %></h2>
 <form method="POST" action="/admin/articles/save">
   <% if (article) { %>
     <input type="hidden" name="id" value="<%= article.id %>">

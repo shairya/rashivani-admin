@@ -5,12 +5,15 @@ const express = require("express");
 // const sequelize = require("./config/db");
 const cookieParser = require("cookie-parser");
 const { sequelize } = require("./models");
+const expressLayouts = require("express-ejs-layouts");
 
 const app = express();
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.static("public"));
 app.set("view engine", "ejs");
+app.use(expressLayouts);
+app.set("layout", "layout");
 app.use(express.urlencoded({ extended: true }));
 app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/articles", require("./routes/articleRoutes"));
