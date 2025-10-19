@@ -40,7 +40,7 @@
   </div>
   <div class="mb-3">
     <label class="form-label">Content:</label>
-    <textarea name="content" class="form-control" id="editor"><%= article?.content || '' %></textarea>
+    <textarea name="content" class="form-control" id="editor" rows="10"><%= article?.content || '' %></textarea>
   </div>
 
   <div class="mb-3">
@@ -70,7 +70,7 @@
 
   <div class="mb-3">
     <label class="form-label">Verses:</label>
-    <textarea name="verses" class="form-control" id="editor"><%= article?.verses || '' %></textarea>
+    <textarea name="verses" class="form-control" id="verses-editor"><%= article?.verses || '' %></textarea>
   </div>
 
   <div class="mb-3">
@@ -170,7 +170,19 @@
   <% } %>
 </ul> -->
 <script>
-  ClassicEditor.create(document.querySelector('#editor')).catch(error => {
-    console.error(error);
-  });
+  ClassicEditor
+    .create(document.querySelector('#editor'))
+    .catch(error => {
+      console.error(error);
+    });
+    ClassicEditor
+    .create(document.querySelector('#fullContent'))
+    .catch(error => {
+      console.error(error);
+    });
+    ClassicEditor
+    .create(document.querySelector('#verses-editor'))
+    .catch(error => {
+      console.error(error);
+    });
 </script>

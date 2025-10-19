@@ -10,6 +10,10 @@ body {
   /* justify-content: center; */
   /* background-color: #4f0031; */
 }
+.ck-editor__editable {
+  min-height: 300px;
+}
+
 .mb-3 .form-label {
   font-weight: 500;
 }
