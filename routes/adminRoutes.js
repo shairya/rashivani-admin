@@ -13,6 +13,7 @@ const PDFDocument = require("pdfkit");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const { secret } = require("../config/jwt");
+const upload = require("../middleware/upload");
 
 router.get("/", auth, rbac(["admin"]), async (req, res) => {
   const userCount = await User.count();
@@ -71,21 +72,79 @@ router.get("/categories/edit/:id", auth, rbac(["admin"]), async (req, res) => {
     title: "Edit Category",
     hideSidebar: false,
     category,
+    active: "categories",
   });
 });
 
-router.post("/categories/save", auth, rbac(["admin"]), async (req, res) => {
-  const { id, name } = req.body;
-  const slug = slugify(name, { lower: true });
+router.post(
+  "/categories/save",
+  upload.fields([
+    { name: "image", maxCount: 1 },
+    { name: "ogImage", maxCount: 1 },
+  ]),
+  auth,
+  rbac(["admin"]),
+  async (req, res) => {
+    try {
+      const {
+        id,
+        name,
+        shortDescription,
+        fullDescription,
+        metaTitle,
+        metaDescription,
+        metaKeywords,
+        ogTitle,
+        ogDescription,
+        canonicalUrl,
+        schemaType,
+        status,
+      } = req.body;
+      const slug = slugify(name, { lower: true });
 
-  if (id) {
-    await Category.update({ name, slug }, { where: { id } });
-  } else {
-    await Category.create({ name, slug });
+      // Extract file paths
+      const imagePath = req.files.image?.[0]?.originalname
+        ? `/uploads/Categories/${name}/${req.files.image[0].originalname}`
+        : null;
+
+      const ogImagePath = req.files.ogImage?.[0]?.originalname
+        ? `/uploads/Categories/${name}/${req.files.ogImage[0].originalname}`
+        : null;
+
+      // Prepare data
+      const categoryData = {
+        name,
+        slug,
+        shortDescription,
+        fullDescription,
+        metaTitle,
+        metaDescription,
+        metaKeywords,
+        ogTitle,
+        ogDescription,
+        canonicalUrl,
+        schemaType,
+        status,
+        image: imagePath,
+        ogImage: ogImagePath,
+      };
+
+      // Save to DB
+      if (id) {
+        await Category.update(categoryData, { where: { id } });
+      } else {
+        await Category.create(categoryData);
+      }
+
+      req.flash("success", "Category saved successfully!");
+      res.redirect("/admin/categories");
+    } catch (error) {
+      console.error("Error saving category:", error);
+      req.flash("error", "Failed to save category.");
+      res.redirect("/admin/categories");
+    }
   }
-  req.flash("success", "Category saved successfully!");
-  res.redirect("/admin/categories");
-});
+);
 
 // SubCategories
 router.get("/subcategories", auth, rbac(["admin"]), async (req, res) => {
@@ -127,6 +186,7 @@ router.get(
       title: "Edit Sub Category",
       subcategory,
       categories,
+      active: "categories",
       hideSidebar: false,
     });
   }

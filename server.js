@@ -1,6 +1,10 @@
 // File: server.js
 require("dotenv").config();
 require("./cron/scheduler");
+const multer = require("multer");
+const path = require("path");
+const fs = require("fs");
+
 const express = require("express");
 const session = require("express-session");
 const flash = require("express-flash");
@@ -20,11 +24,12 @@ app.use(flash());
 
 app.use(cookieParser());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
 app.set("view engine", "ejs");
 app.use(expressLayouts);
 app.set("layout", "layout");
-app.use(express.urlencoded({ extended: true }));
+
 app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/articles", require("./routes/articleRoutes"));
 app.use("/admin", require("./routes/adminRoutes"));
@@ -34,6 +39,6 @@ app.use("/api/media", require("./routes/articleMediaRoutes"));
 
 sequelize.sync().then(() => {
   app.listen(process.env.PORT || 5000, () => {
-    console.log("Server running...");
+    console.log("Server running at port 5000");
   });
 });

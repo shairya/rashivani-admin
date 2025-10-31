@@ -1,10 +1,175 @@
 <!-- File: views/categories/form.ejs -->
 <h2><%= category ? 'Edit' : 'Create' %> Category</h2>
-<form method="POST" action="/admin/categories/save">
+<form
+  method="POST"
+  action="/admin/categories/save"
+  enctype="multipart/form-data"
+>
   <% if (category) { %>
-    <input type="hidden" name="id" value="<%= category.id %>">
+  <input
+    class="form-control"
+    type="hidden"
+    name="id"
+    value="<%= category.id %>"
+  />
   <% } %>
-  <label>Name:</label>
-  <input type="text" name="name" value="<%= category ? category.name : '' %>" required>
-  <button type="submit">Save</button>
+  <div class="mb-3">
+    <label class="form-label">Name:</label>
+    <input
+      class="form-control"
+      type="text"
+      name="name"
+      value="<%= category ? category.name : '' %>"
+      required
+    />
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Slug:</label>
+    <input
+      class="form-control"
+      type="text"
+      name="slug"
+      value="<%= category ? category.slug : '' %>"
+    />
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Image:</label>
+    <input
+      class="form-control"
+      type="file"
+      name="image"
+      value="<%= category ? category.image : '' %>"
+    />
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Short Description:</label>
+    <textarea
+      name="shortDescription"
+      id="shortDescription"
+      class="form-control"
+      rows="4"
+    >
+<%= category?.shortDescription || '' %></textarea
+    >
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Full Description:</label>
+    <textarea
+      name="fullDescription"
+      id="fullDescription"
+      class="form-control"
+      rows="4"
+    >
+<%= category?.fullDescription || '' %></textarea
+    >
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Meta Title:</label>
+    <input
+      class="form-control"
+      type="text"
+      name="metaTitle"
+      value="<%= category ? category.metaTitle : '' %>"
+    />
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Meta Description:</label>
+    <textarea
+      name="metaDescription"
+      id="metaDescription"
+      class="form-control"
+      rows="4"
+    >
+<%= category?.metaDescription || '' %></textarea
+    >
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Meta Keywords:</label>
+    <input
+      class="form-control"
+      type="text"
+      name="metaKeywords"
+      value="<%= category ? category.metaKeywords : '' %>"
+    />
+  </div>
+  <div class="mb-3">
+    <label class="form-label">OG Title:</label>
+    <input
+      class="form-control"
+      type="text"
+      name="ogTitle"
+      value="<%= category ? category.ogTitle : '' %>"
+    />
+  </div>
+  <div class="mb-3">
+    <label class="form-label">OG Description:</label>
+    <textarea
+      name="ogDescription"
+      id="ogDescription"
+      class="form-control"
+      rows="4"
+    >
+<%= category?.ogDescription || '' %></textarea
+    >
+  </div>
+  <div class="mb-3">
+    <label class="form-label">OG IMage:</label>
+    <input
+      class="form-control"
+      type="file"
+      name="ogImage"
+      value="<%= category ? category.ogImage : '' %>"
+    />
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Canonical URL:</label>
+    <input
+      class="form-control"
+      type="text"
+      name="canonicalUrl"
+      value="<%= category ? category.canonicalUrl : '' %>"
+    />
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Schema Type:</label>
+    <input
+      class="form-control"
+      type="text"
+      name="schemaType"
+      value="<%= category ? category.schemaType : '' %>"
+    />
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Status:</label>
+    <select name="status" id="status" class="form-control">
+      <option value="Active" selected>Active</option>
+      <option value="Draft" selected>Draft</option>
+      <option value="Inactive" selected>Inactive</option>
+    </select>
+  </div>
+  <div class="mb-3">
+    <button type="submit" class="btn btn-primary">Save</button>
+  </div>
 </form>
+<script>
+  ClassicEditor.create(document.querySelector("#shortDescription")).catch(
+    (error) => {
+      console.error(error);
+    }
+  );
+  ClassicEditor.create(document.querySelector("#fullDescription")).catch(
+    (error) => {
+      console.error(error);
+    }
+  );
+  ClassicEditor.create(document.querySelector("#metaDescription")).catch(
+    (error) => {
+      console.error(error);
+    }
+  );
+  ClassicEditor.create(document.querySelector("#ogDescription")).catch(
+    (error) => {
+      console.error(error);
+    }
+  );
+</script>
