@@ -5,7 +5,7 @@ const fs = require("fs");
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    const category = req.body.category || "default";
+    const category = req.body.name || "default";
     const uploadPath = path.join(
       __dirname,
       "../public/uploads/Categories",

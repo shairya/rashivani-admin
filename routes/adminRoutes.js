@@ -148,14 +148,21 @@ router.post(
 
 // SubCategories
 router.get("/subcategories", auth, rbac(["admin"]), async (req, res) => {
-  const subcategories = await SubCategory.findAll({
-    include: [Category],
-    order: [["createdAt", "DESC"]],
-  });
+  let subcategories = [];
+
+  try {
+    subcategories = await SubCategory.findAll({
+      include: [Category],
+      order: [["createdAt", "DESC"]],
+    });
+    console.log(subcategories);
+  } catch (error) {
+    console.log(error);
+  }
 
   res.render("subcategories/list", {
     layout: "layout",
-    title: "Cub Categories",
+    title: "Sub Categories",
     active: "subcategories",
     hideSidebar: false,
     subcategories,
@@ -186,24 +193,98 @@ router.get(
       title: "Edit Sub Category",
       subcategory,
       categories,
-      active: "categories",
+      active: "subcategories",
       hideSidebar: false,
     });
   }
 );
 
-router.post("/subcategories/save", auth, rbac(["admin"]), async (req, res) => {
-  const { id, name, categoryId } = req.body;
-  const slug = slugify(name, { lower: true });
+router.post(
+  "/subcategories/save",
+  upload.fields([
+    { name: "image", maxCount: 1 },
+    { name: "ogImage", maxCount: 1 },
+  ]),
+  auth,
+  rbac(["admin"]),
+  async (req, res) => {
+    const {
+      id,
+      name,
+      categoryId,
+      shortDescription,
+      fullDescription,
+      metaTitle,
+      metaDescription,
+      metaKeywords,
+      ogTitle,
+      ogDescription,
+      canonicalUrl,
+      schemaType,
+      status,
+    } = req.body;
+    const slug = slugify(name, { lower: true });
+    // Extract file paths
+    const imagePath = req.files.image?.[0]?.originalname
+      ? `/uploads/Sub-categories/${name}/${req.files.image[0].originalname}`
+      : null;
 
-  if (id) {
-    await SubCategory.update({ name, slug, categoryId }, { where: { id } });
-  } else {
-    await SubCategory.create({ name, slug, categoryId });
+    const ogImagePath = req.files.ogImage?.[0]?.originalname
+      ? `/uploads/Sub-categories/${name}/${req.files.ogImage[0].originalname}`
+      : null;
+
+    if (id) {
+      try {
+        await SubCategory.update(
+          {
+            name,
+            slug,
+            categoryId,
+            shortDescription,
+            fullDescription,
+            metaTitle,
+            metaDescription,
+            metaKeywords,
+            ogTitle,
+            ogDescription,
+            canonicalUrl,
+            schemaType,
+            status,
+            image: imagePath,
+            ogImage: ogImagePath,
+          },
+          { where: { id } }
+        );
+      } catch (err) {
+        console.log(err);
+      }
+    } else {
+      try {
+        await SubCategory.create({
+          name,
+          slug,
+          categoryId,
+          shortDescription,
+          fullDescription,
+          metaTitle,
+          metaDescription,
+          metaKeywords,
+          ogTitle,
+          ogDescription,
+          canonicalUrl,
+          schemaType,
+          status,
+          image: imagePath,
+          ogImage: ogImagePath,
+        });
+      } catch (err) {
+        console.log(err);
+      }
+    }
+    req.flash("success", "SubCategory saved successfully!");
+    res.redirect("/admin/subcategories");
   }
-  req.flash("success", "SubCategory saved successfully!");
-  res.redirect("/admin/subcategories");
-});
+);
 
 // Articles
 router.get("/articles", auth, rbac(["admin", "editor"]), async (req, res) => {
