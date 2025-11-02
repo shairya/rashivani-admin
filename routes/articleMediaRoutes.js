@@ -1,10 +1,12 @@
 // File: routes/articleMediaRoutes.js
 const express = require("express");
 const router = express.Router();
-const upload = require("../middleware/upload");
+// const upload = require("../middleware/upload");
 const auth = require("../middleware/auth");
 const rbac = require("../middleware/rbac");
 const ArticleMedia = require("../models/ArticleMedia");
+const createUploadMiddleware = require("../middleware/upload");
+const upload = createUploadMiddleware("Articles");
 
 router.post(
   "/upload/:articleId",

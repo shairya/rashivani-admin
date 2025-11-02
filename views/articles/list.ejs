@@ -1,28 +1,32 @@
 <!-- File: views/articles/list.ejs -->
 <h2><%= title %></h2>
 
-<a href="/admin/articles/new">Add Article</a>
-<a href="/admin/export/articles/csv">Export Articles (CSV)</a>
+<a href="/admin/articles/new" class="btn btn-primary">Add Article</a>
+<a href="/admin/export/articles/csv" class="btn btn-primary">Export Articles (CSV)</a>
 <form method="GET" action="/admin/articles">
-  <input type="text" name="q" placeholder="Search title..." value="<%= filters.q %>">
-  <select name="status">
-    <option value="">All Status</option>
-    <option value="draft" <%= filters.status === 'draft' ? 'selected' : '' %>>Draft</option>
-    <option value="published" <%= filters.status === 'published' ? 'selected' : '' %>>Published</option>
-  </select>
-  <select name="categoryId">
-    <option value="">All Categories</option>
-    <% categories.forEach(cat => { %>
-      <option value="<%= cat.id %>" <%= filters.categoryId == cat.id ? 'selected' : '' %>><%= cat.name %></option>
-    <% }) %>
-  </select>
-  <select name="subCategoryId">
-    <option value="">All Sub-Categories</option>
-    <% subcategories.forEach(sub => { %>
-      <option value="<%= sub.id %>" <%= filters.subCategoryId == sub.id ? 'selected' : '' %>><%= sub.name %></option>
-    <% }) %>
-  </select>
-  <button type="submit">Filter</button>
+    <!-- Filter Options Container -->
+      <input type="text" name="q" placeholder="Search title..." value="<%= filters.q %>">
+      <select name="status">
+        <option value="">All Status</option>
+        <option value="draft" <%= filters.status === 'draft' ? 'selected' : '' %>>Draft</option>
+        <option value="published" <%= filters.status === 'published' ? 'selected' : '' %>>Published</option>
+      </select>
+      
+      <select name="categoryId">
+        <option value="">All Categories</option>
+        <% categories.forEach(cat => { %>
+          <option value="<%= cat.id %>" <%= filters.categoryId == cat.id ? 'selected' : '' %>><%= cat.name %></option>
+        <% }) %>
+      </select>
+      
+      
+      <select name="subCategoryId">
+        <option value="">All Sub-Categories</option>
+        <% subcategories.forEach(sub => { %>
+          <option value="<%= sub.id %>" <%= filters.subCategoryId == sub.id ? 'selected' : '' %>><%= sub.name %></option>
+        <% }) %>
+      </select>
+      <button type="submit" class="btn btn-primary">Filter</button>
 </form>
 <!-- <form method="POST" action="/admin/articles/bulk-action">
   <input type="hidden" name="action" id="bulk-action-type">
@@ -40,16 +44,16 @@
   <button type="button" onclick="setBulkAction('delete')">Delete Selected</button>
 </form> -->
 
-<ul>
+<ul class="list-disc">
   <% if (articles && articles.length > 0) { %>
     <% articles.forEach(article => { %>
     <li>
-      <strong><%= article.title %></strong> - (<%=
+      <strong><%= article.name %></strong> - (<%=
       article.Category?.name %> / <%= article.SubCategory?.name %>) / <%= article.status %> 
-      <a href="/admin/articles/edit/<%= article.id %>">Edit</a>
+      <a href="/admin/articles/edit/<%= article.id %>" class="btn btn-primary">Edit</a>
       <form method="POST" action="/admin/articles/toggle-status/<%= article.id %>">
-        <button type="submit">
-          Toggle to <%= article.status === 'draft' ? 'Published' : 'Draft' %>
+        <button type="submit" class="btn btn-primary">
+          Toggle to <%= article.status === 'Draft' ? 'Active' : 'Draft' %>
         </button>
       </form>
     </li>

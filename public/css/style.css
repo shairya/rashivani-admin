@@ -31,3 +31,7 @@ body {
 .btn {
   background-color: #8427d6;
 }
+
+.bg-dark {
+  background-color: #8427d6 !important;
+}

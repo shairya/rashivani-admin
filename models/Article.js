@@ -1,11 +1,12 @@
 // File: models/Article.js
 const { DataTypes } = require("sequelize");
 const sequelize = require("../config/db");
+const CATEGORY_STATUSES = ["Active", "Draft", "Inactive"];
 
 const Article = sequelize.define(
   "Article",
   {
-    title: DataTypes.STRING,
+    name: DataTypes.STRING,
     sanskritTitle: DataTypes.STRING,
     deity: DataTypes.STRING,
     verseCount: DataTypes.INTEGER,
@@ -25,7 +26,20 @@ const Article = sequelize.define(
     youtubeUrl: DataTypes.STRING,
     relatedMantras: DataTypes.STRING,
     festivals: DataTypes.STRING,
-    status: DataTypes.ENUM("draft", "published"),
+    keywords: DataTypes.STRING,
+    introText: DataTypes.STRING,
+    metaTitle: DataTypes.STRING,
+    metaDescription: DataTypes.STRING,
+    ogTitle: DataTypes.STRING,
+    ogDescription: DataTypes.STRING,
+    ogImage: DataTypes.STRING,
+    canonicalUrl: DataTypes.STRING,
+    schemaType: DataTypes.STRING,
+    status: {
+      type: DataTypes.ENUM(...CATEGORY_STATUSES),
+      defaultValue: "Draft",
+      allowNull: false,
+    },
     publishDate: DataTypes.DATE,
     viewCount: { type: DataTypes.INTEGER, defaultValue: 0 },
     scheduledPublishDate: { type: DataTypes.DATE, allowNull: true },
@@ -38,3 +52,4 @@ const Article = sequelize.define(
 );
 
 module.exports = Article;
+module.exports.STATUSES = CATEGORY_STATUSES;

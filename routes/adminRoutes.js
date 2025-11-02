@@ -13,7 +13,11 @@ const PDFDocument = require("pdfkit");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const { secret } = require("../config/jwt");
-const upload = require("../middleware/upload");
+// const upload = require("../middleware/upload");
+const createUploadMiddleware = require("../middleware/upload");
+const uploadCategoryImages = createUploadMiddleware("Categories");
+const uploadSubcategoryImages = createUploadMiddleware("SubCategories");
+const uploadArticleImages = createUploadMiddleware("Articles");
 
 router.get("/", auth, rbac(["admin"]), async (req, res) => {
   const userCount = await User.count();
@@ -78,7 +82,7 @@ router.get("/categories/edit/:id", auth, rbac(["admin"]), async (req, res) => {
 
 router.post(
   "/categories/save",
-  upload.fields([
+  uploadCategoryImages.fields([
     { name: "image", maxCount: 1 },
     { name: "ogImage", maxCount: 1 },
   ]),
@@ -201,7 +205,7 @@ router.get(
 
 router.post(
   "/subcategories/save",
-  upload.fields([
+  uploadSubcategoryImages.fields([
     { name: "image", maxCount: 1 },
     { name: "ogImage", maxCount: 1 },
   ]),
@@ -369,22 +373,24 @@ router.get(
 
 router.post(
   "/articles/save",
+  uploadArticleImages.fields([
+    { name: "imageUrl", maxCount: 1 },
+    { name: "ogImage", maxCount: 1 },
+  ]),
   auth,
   rbac(["admin", "editor"]),
   async (req, res) => {
     const { scheduledPublishDate, ...rest } = req.body;
     const publishDate = scheduledPublishDate || rest.publishDate;
-
     const {
       id,
-      title,
+      name,
       sanskritTitle,
       deity,
       author,
       verseCount,
       language,
       benefits,
-      slug,
       content,
       bestTime,
       duration,
@@ -400,42 +406,74 @@ router.post(
       status,
       categoryId,
       subCategoryId,
+      keywords,
+      introText,
+      metaTitle,
+      metaDescription,
+      ogTitle,
+      ogDescription,
+      ogImage,
+      canonicalUrl,
+      schemaType,
     } = req.body;
+    const slug = slugify(name, { lower: true });
+
+    // Extract file paths
+    const imagePath = req.files.imageUrl?.[0]?.originalname
+      ? `/uploads/Articles/${name}/${req.files.imageUrl[0].originalname}`
+      : null;
+
+    const ogImagePath = req.files.ogImage?.[0]?.originalname
+      ? `/uploads/Articles/${name}/${req.files.ogImage[0].originalname}`
+      : null;
 
     if (id) {
-      await Article.update(
-        {
-          title,
-          sanskritTitle,
-          deity,
-          author,
-          verseCount,
-          language,
-          benefits,
-          slug,
-          content,
-          bestTime,
-          duration,
-          repetitions,
-          verses,
-          fullContent,
-          audioUrl,
-          imageUrl,
-          youtubeUrl,
-          relatedMantras,
-          festivals,
-          tags,
-          status,
-          publishDate,
-          categoryId,
-          subCategoryId,
-          scheduledPublishDate,
-        },
-        { where: { id } }
-      );
+      try {
+        await Article.update(
+          {
+            name,
+            sanskritTitle,
+            deity,
+            author,
+            verseCount,
+            language,
+            benefits,
+            slug,
+            content,
+            bestTime,
+            duration,
+            repetitions,
+            verses,
+            fullContent,
+            audioUrl,
+            imageUrl: imagePath,
+            youtubeUrl,
+            relatedMantras,
+            festivals,
+            tags,
+            status,
+            publishDate,
+            categoryId,
+            subCategoryId,
+            scheduledPublishDate,
+            keywords,
+            introText,
+            metaTitle,
+            metaDescription,
+            ogTitle,
+            ogDescription,
+            ogImage: ogImagePath,
+            canonicalUrl,
+            schemaType,
+          },
+          { where: { id } }
+        );
+      } catch (err) {
+        console.log(err);
+      }
     } else {
       await Article.create({
-        title,
+        name,
         slug,
         content,
         bestTime,
@@ -444,7 +482,7 @@ router.post(
         verses,
         fullContent,
         audioUrl,
-        imageUrl,
+        imageUrl: imagePath,
         youtubeUrl,
         relatedMantras,
         festivals,
@@ -455,6 +493,15 @@ router.post(
         categoryId,
         subCategoryId,
         scheduledPublishDate,
+        keywords,
+        introText,
+        metaTitle,
+        metaDescription,
+        ogTitle,
+        ogDescription,
+        ogImage: ogImagePath,
+        canonicalUrl,
+        schemaType,
       });
     }
     req.flash("success", "Article saved successfully!");
