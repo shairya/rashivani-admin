@@ -1,11 +1,71 @@
 <!-- File: views/subcategories/list.ejs -->
-<h2>Sub-Categories</h2>
-<a href="/admin/subcategories/new">Add Sub-Category</a>
-<ul>
-  <% subcategories.forEach(sub => { %>
-  <li>
-    <%= sub.name %> (<%= sub.slug %>) - <%= sub.Category.name %>
-    <a href="/admin/subcategories/edit/<%= sub.id %>">Edit</a>
-  </li>
-  <% }) %>
-</ul>
+<div class="flex justify-between items-center mb-6">
+  <h2 class="text-3xl font-bold text-gray-800">Sub-Categories</h2>
+  <a href="/admin/subcategories/new" class="btn-primary">
+    <svg class="w-5 h-5 inline-block mr-2 -mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+    </svg>
+    Add Sub-Category
+  </a>
+</div>
+<div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+  <table
+    class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400"
+  >
+    <thead
+      class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400"
+    >
+      <tr>
+        <th scope="col" class="p-3">
+          <div class="flex items-center">
+            <input
+              id="checkbox-all-search"
+              type="checkbox"
+              class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+            />
+            <label for="checkbox-all-search" class="sr-only"></label>
+          </div>
+        </th>
+        <th scope="col" class="px-6 py-3">Sub-Category Name</th>
+        <th scope="col" class="px-6 py-3">Slug</th>
+        <th scope="col" class="px-6 py-3">Parent Category</th>
+        <th scope="col" class="px-6 py-3">Status</th>
+        <th scope="col" class="px-6 py-3">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% subcategories.forEach(sub => { %>
+      <tr
+        class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600"
+      >
+        <td class="w-4 p-3">
+          <div class="flex items-center">
+            <input
+              id="checkbox-table-search-<%= sub.id %>"
+              type="checkbox"
+              class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+            />
+            <label for="checkbox-table-search-<%= sub.id %>" class="sr-only"></label>
+          </div>
+        </td>
+        <th scope="row" class="px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white"><%= sub.name %></th>
+        <td class="px-6 py-3"><%= sub.slug %></td>
+        <td class="px-6 py-3"><%= sub.Category.name %></td>
+        <td class="px-6 py-3">
+          <span class="<%= sub.status === 'Active' ? 'text-green-600 bg-green-100' : sub.status === 'Draft' ? 'text-yellow-600 bg-yellow-100' : 'text-gray-600 bg-gray-100' %> px-3 py-1 rounded-full text-xs font-medium">
+            <%= sub.status %>
+          </span>
+        </td>
+        <td class="px-6 py-3">
+          <a
+            href="/admin/subcategories/edit/<%= sub.id %>"
+            class="btn-secondary text-sm"
+            style="padding: 8px 16px; font-size: 14px;"
+            >Edit</a
+          >
+        </td>
+      </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>

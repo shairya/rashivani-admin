@@ -1,6 +1,13 @@
 <!-- File: views/categories/list.ejs -->
-<h2>Categories</h2>
-<a href="/admin/categories/new" class="btn btn-primary">Add Category</a>
+<div class="flex justify-between items-center mb-6">
+  <h2 class="text-3xl font-bold text-gray-800">Categories</h2>
+  <a href="/admin/categories/new" class="btn-primary">
+    <svg class="w-5 h-5 inline-block mr-2 -mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+    </svg>
+    Add Category
+  </a>
+</div>
 <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
   <table
     class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400"
@@ -48,7 +55,8 @@
         <td class="px-6 py-3">
           <a
             href="/admin/categories/edit/<%= cat.id %>"
-            class="btn btn btn-primary"
+            class="btn-secondary text-sm"
+            style="padding: 8px 16px; font-size: 14px;"
             >Edit</a
           >
         </td>

@@ -1,78 +1,162 @@
 <!-- File: views/articles/list.ejs -->
-<h2><%= title %></h2>
+<div class="flex justify-between items-center mb-6">
+  <h2 class="text-3xl font-bold text-gray-800"><%= title %></h2>
+  <div class="flex gap-3">
+    <a href="/admin/export/articles/csv" class="btn-secondary">
+      <svg class="w-5 h-5 inline-block mr-2 -mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+      </svg>
+      Export CSV
+    </a>
+    <a href="/admin/articles/new" class="btn-primary">
+      <svg class="w-5 h-5 inline-block mr-2 -mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+      </svg>
+      Add Article
+    </a>
+  </div>
+</div>
 
-<a href="/admin/articles/new" class="btn btn-primary">Add Article</a>
-<a href="/admin/export/articles/csv" class="btn btn-primary">Export Articles (CSV)</a>
-<form method="GET" action="/admin/articles">
-    <!-- Filter Options Container -->
-      <input type="text" name="q" placeholder="Search title..." value="<%= filters.q %>">
-      <select name="status">
+<!-- Filter Section -->
+<div class="bg-white rounded-2xl shadow-lg p-6 mb-6 border border-gray-200">
+  <h3 class="text-lg font-semibold text-gray-800 mb-4">Filters</h3>
+  <form method="GET" action="/admin/articles">
+    <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-4">
+      <input 
+        type="text" 
+        name="q" 
+        placeholder="Search title..." 
+        value="<%= filters.q %>"
+        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+      />
+      <select 
+        name="status"
+        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+      >
         <option value="">All Status</option>
         <option value="draft" <%= filters.status === 'draft' ? 'selected' : '' %>>Draft</option>
         <option value="published" <%= filters.status === 'published' ? 'selected' : '' %>>Published</option>
       </select>
-      
-      <select name="categoryId">
+      <select 
+        name="categoryId"
+        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+      >
         <option value="">All Categories</option>
         <% categories.forEach(cat => { %>
           <option value="<%= cat.id %>" <%= filters.categoryId == cat.id ? 'selected' : '' %>><%= cat.name %></option>
         <% }) %>
       </select>
-      
-      
-      <select name="subCategoryId">
+      <select 
+        name="subCategoryId"
+        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+      >
         <option value="">All Sub-Categories</option>
         <% subcategories.forEach(sub => { %>
           <option value="<%= sub.id %>" <%= filters.subCategoryId == sub.id ? 'selected' : '' %>><%= sub.name %></option>
         <% }) %>
       </select>
-      <button type="submit" class="btn btn-primary">Filter</button>
-</form>
-<!-- <form method="POST" action="/admin/articles/bulk-action">
-  <input type="hidden" name="action" id="bulk-action-type">
-  <ul>
-    <% if (articles && articles.length > 0) { %>
-      <% articles.forEach(article => { %>
-        <li>
-          <input type="checkbox" name="selectedIds" value="<%= article.id %>">
-          <strong><%= article.title %></strong> - <%= article.status %>
-        </li>
-      <% }) %>
-    <% } %>
-  </ul>
-  <button type="button" onclick="setBulkAction('publish')">Publish Selected</button>
-  <button type="button" onclick="setBulkAction('delete')">Delete Selected</button>
-</form> -->
+      <button type="submit" class="btn-primary">
+        <svg class="w-5 h-5 inline-block mr-2 -mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+        </svg>
+        Filter
+      </button>
+    </div>
+  </form>
+</div>
 
-<ul class="list-disc">
-  <% if (articles && articles.length > 0) { %>
-    <% articles.forEach(article => { %>
-    <li>
-      <strong><%= article.name %></strong> - (<%=
-      article.Category?.name %> / <%= article.SubCategory?.name %>) / <%= article.status %> 
-      <a href="/admin/articles/edit/<%= article.id %>" class="btn btn-primary">Edit</a>
-      <form method="POST" action="/admin/articles/toggle-status/<%= article.id %>">
-        <button type="submit" class="btn btn-primary">
-          Toggle to <%= article.status === 'Draft' ? 'Active' : 'Draft' %>
-        </button>
-      </form>
-    </li>
-    <% }) %>
-  <% } %>
-</ul>
-<div>
-  <% if(articles.length > pagination.limit) { %>
-    <% for (let i = 1; i <= pagination.totalPages; i++) { %>
-      <a href="?page=<%= i %>&<%= new URLSearchParams(filters).toString() %>">
-        <%= i === pagination.page ? `<strong>${i}</strong>` : i %>
-      </a>
-    <% } %>
+<!-- Articles Table -->
+<div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+  <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+      <tr>
+        <th scope="col" class="p-3">
+          <div class="flex items-center">
+            <input
+              id="checkbox-all-search"
+              type="checkbox"
+              class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500"
+            />
+            <label for="checkbox-all-search" class="sr-only"></label>
+          </div>
+        </th>
+        <th scope="col" class="px-6 py-3">Article Name</th>
+        <th scope="col" class="px-6 py-3">Category</th>
+        <th scope="col" class="px-6 py-3">Sub-Category</th>
+        <th scope="col" class="px-6 py-3">Status</th>
+        <th scope="col" class="px-6 py-3">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if (articles && articles.length > 0) { %>
+        <% articles.forEach(article => { %>
+        <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600">
+          <td class="w-4 p-3">
+            <div class="flex items-center">
+              <input
+                id="checkbox-table-<%= article.id %>"
+                type="checkbox"
+                class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500"
+              />
+              <label for="checkbox-table-<%= article.id %>" class="sr-only"></label>
+            </div>
+          </td>
+          <th scope="row" class="px-6 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+            <%= article.name %>
+          </th>
+          <td class="px-6 py-3"><%= article.Category?.name || 'N/A' %></td>
+          <td class="px-6 py-3"><%= article.SubCategory?.name || 'N/A' %></td>
+          <td class="px-6 py-3">
+            <span class="<%= article.status === 'Active' ? 'text-green-600 bg-green-100' : article.status === 'Draft' ? 'text-yellow-600 bg-yellow-100' : 'text-gray-600 bg-gray-100' %> px-3 py-1 rounded-full text-xs font-medium">
+              <%= article.status %>
+            </span>
+          </td>
+          <td class="px-6 py-3">
+            <div class="flex gap-2">
+              <a
+                href="/admin/articles/edit/<%= article.id %>"
+                class="btn-secondary text-sm"
+                style="padding: 8px 16px; font-size: 14px;"
+              >Edit</a>
+              <form method="POST" action="/admin/articles/toggle-status/<%= article.id %>" class="inline-block">
+                <button 
+                  type="submit" 
+                  class="text-sm px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                  style="padding: 8px 16px; font-size: 14px;"
+                >
+                  Toggle
+                </button>
+              </form>
+            </div>
+          </td>
+        </tr>
+        <% }) %>
+      <% } else { %>
+        <tr>
+          <td colspan="6" class="px-6 py-8 text-center text-gray-500">
+            <svg class="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            </svg>
+            <p class="text-lg font-medium">No articles found</p>
+            <p class="text-sm mt-2">Try adjusting your filters or create a new article</p>
+          </td>
+        </tr>
+      <% } %>
+    </tbody>
+  </table>
+</div>
+
+<!-- Pagination -->
+<% if(articles.length > pagination.limit) { %>
+<div class="flex justify-center gap-2 mt-6">
+  <% for (let i = 1; i <= pagination.totalPages; i++) { %>
+    <a 
+      href="?page=<%= i %>&<%= new URLSearchParams(filters).toString() %>"
+      class="<%= i === pagination.page ? 'btn-primary' : 'btn-secondary' %> text-sm"
+      style="padding: 8px 16px; font-size: 14px;"
+    >
+      <%= i %>
+    </a>
   <% } %>
 </div>
-<script>
-  function setBulkAction(action) {
-    document.getElementById('bulk-action-type').value = action;
-    document.forms[0].submit();
-  }
-</script>
-
+<% } %>
