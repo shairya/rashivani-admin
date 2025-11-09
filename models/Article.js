@@ -11,6 +11,7 @@ const Article = sequelize.define(
     deity: DataTypes.STRING,
     verseCount: DataTypes.INTEGER,
     language: DataTypes.STRING,
+    languageCode: DataTypes.STRING,
     benefits: DataTypes.TEXT,
     slug: { type: DataTypes.STRING, unique: true },
     content: DataTypes.TEXT,

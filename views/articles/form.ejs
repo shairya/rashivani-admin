@@ -1,4 +1,5 @@
 <!-- File: views/articles/form.ejs -->
+
 <div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <!-- Header -->
@@ -20,6 +21,29 @@
       <% if (article) { %>
       <input type="hidden" name="id" value="<%= article.id %>" />
       <% } %>
+<!-- =======
+<h2><%= title %></h2>
+<form method="POST" action="/admin/articles/save" enctype="multipart/form-data">
+  <% if (article) { %>
+    <input type="hidden" name="id" value="<%= article.id %>">
+    <div class="mb-3">
+      <label class="form-label">Select Language:</label>
+      <select name="languageCode">
+        <option value="en" <%= article?.languageCode === 'en' ? 'selected' : '' %>>English</option>
+        <option value="hi" <%= article?.languageCode === 'hi' ? 'selected' : '' %>>Hindi</option>
+      </select>
+    </div>
+  <% } %>
+  <div class="mb-3">
+    <label class="form-label">Article Name</label>
+    <input type="text" name="name" class="form-control"  value="<%= article?.name || '' %>" required>
+  </div>
+  
+  <div class="mb-3">
+    <label class="form-label">Slug:</label>
+    <input type="text" class="form-control" name="slug" value="<%= article?.slug || '' %>" required>
+  </div>
+>>>>>>> 14cf732a356e337f6f12f840189d8c55a2b96855 -->
 
       <!-- Basic Information Card -->
       <div class="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-200 hover:shadow-xl transition-shadow duration-300">

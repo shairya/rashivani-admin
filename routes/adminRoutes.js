@@ -167,8 +167,8 @@ router.get("/subcategories", auth, rbac(["admin"]), async (req, res) => {
   res.render("subcategories/list", {
     layout: "layout",
     title: "Sub Categories",
-    active: "subcategories",
     hideSidebar: false,
+    active: "Dashboard",
     subcategories,
   });
 });
@@ -302,6 +302,22 @@ router.get("/articles", auth, rbac(["admin", "editor"]), async (req, res) => {
 
   const where = {}; // Add filters as before
 
+  if (req.query.q && req.query.q.trim() !== "") {
+    where.name = { [Op.like]: `%${req.query.q.trim()}%` };
+  }
+
+  if (req.query.status && req.query.status !== "") {
+    where.status = req.query.status;
+  }
+
+  if (req.query.categoryId && req.query.categoryId !== "") {
+    where.categoryId = req.query.categoryId;
+  }
+
+  if (req.query.subCategoryId && req.query.subCategoryId !== "") {
+    where.subCategoryId = req.query.subCategoryId;
+  }
+
   const { rows: articles, count } = await Article.findAndCountAll({
     where,
     include: [{ model: Category }, { model: SubCategory }],
@@ -390,6 +406,7 @@ router.post(
       author,
       verseCount,
       language,
+      languageCode,
       benefits,
       content,
       bestTime,
@@ -398,7 +415,6 @@ router.post(
       verses,
       fullContent,
       audioUrl,
-      imageUrl,
       youtubeUrl,
       relatedMantras,
       festivals,
@@ -412,7 +428,6 @@ router.post(
       metaDescription,
       ogTitle,
       ogDescription,
-      ogImage,
       canonicalUrl,
       schemaType,
     } = req.body;
@@ -437,6 +452,7 @@ router.post(
             author,
             verseCount,
             language,
+            languageCode,
             benefits,
             slug,
             content,
@@ -475,11 +491,17 @@ router.post(
       await Article.create({
         name,
         slug,
+        sanskritTitle,
+        deity,
         content,
         bestTime,
         duration,
         repetitions,
         verses,
+        verseCount,
+        language,
+        languageCode,
+        benefits,
         fullContent,
         audioUrl,
         imageUrl: imagePath,
