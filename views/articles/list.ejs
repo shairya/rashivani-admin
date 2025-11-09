@@ -8,8 +8,9 @@
       <input type="text" name="q" placeholder="Search title..." value="<%= filters.q %>">
       <select name="status">
         <option value="">All Status</option>
-        <option value="draft" <%= filters.status === 'draft' ? 'selected' : '' %>>Draft</option>
-        <option value="published" <%= filters.status === 'published' ? 'selected' : '' %>>Published</option>
+        <option value="Draft" <%= filters.status === 'Draft' ? 'selected' : '' %>>Draft</option>
+        <option value="Active" <%= filters.status === 'Active' ? 'selected' : '' %>>Active</option>
+        <option value="InActive" <%= filters.status === 'InActive' ? 'selected' : '' %>>InActive</option>
       </select>
       
       <select name="categoryId">
@@ -18,8 +19,7 @@
           <option value="<%= cat.id %>" <%= filters.categoryId == cat.id ? 'selected' : '' %>><%= cat.name %></option>
         <% }) %>
       </select>
-      
-      
+
       <select name="subCategoryId">
         <option value="">All Sub-Categories</option>
         <% subcategories.forEach(sub => { %>
@@ -28,47 +28,68 @@
       </select>
       <button type="submit" class="btn btn-primary">Filter</button>
 </form>
-<!-- <form method="POST" action="/admin/articles/bulk-action">
-  <input type="hidden" name="action" id="bulk-action-type">
-  <ul>
-    <% if (articles && articles.length > 0) { %>
-      <% articles.forEach(article => { %>
-        <li>
-          <input type="checkbox" name="selectedIds" value="<%= article.id %>">
-          <strong><%= article.title %></strong> - <%= article.status %>
-        </li>
-      <% }) %>
-    <% } %>
-  </ul>
-  <button type="button" onclick="setBulkAction('publish')">Publish Selected</button>
-  <button type="button" onclick="setBulkAction('delete')">Delete Selected</button>
-</form> -->
-
-<ul class="list-disc">
-  <% if (articles && articles.length > 0) { %>
-    <% articles.forEach(article => { %>
-    <li>
-      <strong><%= article.name %></strong> - (<%=
-      article.Category?.name %> / <%= article.SubCategory?.name %>) / <%= article.status %> 
-      <a href="/admin/articles/edit/<%= article.id %>" class="btn btn-primary">Edit</a>
-      <form method="POST" action="/admin/articles/toggle-status/<%= article.id %>">
-        <button type="submit" class="btn btn-primary">
-          Toggle to <%= article.status === 'Draft' ? 'Active' : 'Draft' %>
-        </button>
-      </form>
-    </li>
-    <% }) %>
-  <% } %>
-</ul>
+<div class="relative overflow-x-auto shadow-md w-full" style="border:0px solid red">
+  <table border="0"
+    class="table-auto w-full"
+  >
+    <thead
+      class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400"
+    >
+      <tr>
+        <th class="px-4 py-2">
+          <div class="flex items-center">
+            <input
+              id="checkbox-all-search"
+              type="checkbox"
+              class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+            />
+            <label for="checkbox-all-search" class="sr-only"></label>
+          </div>
+        </th>
+        <th>Article name</th>
+        <th>Category</th>
+        <th>Sub-Category</th>
+        <th>Status</th>
+        <th>Language</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if (articles && articles.length > 0) { %>
+        <% articles.forEach(article => { %>
+          <tr>
+            <td>
+              <div class="flex items-center">
+                <input
+                  id="checkbox-table-search-1"
+                  type="checkbox"
+                  class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                />
+                <label for="checkbox-table-search-1" class="sr-only"
+                  ></label
+                >
+              </div>
+            </td>
+            <td><%= article.name %></td>
+            <td><%= article.Category?.name %></td>
+            <td><%= article.SubCategory?.name %></td>
+            <td><%= article.status %></td>
+            <td><%= article.languageCode === 'hi' ? 'Hindi' : 'English' %></td>
+            <td>
+              <a href="/admin/articles/edit/<%= article.id %>" class="btn btn-primary">Edit</a>
+              <form method="POST" action="/admin/articles/toggle-status/<%= article.id %>">
+                <button type="submit" class="btn btn-primary">
+                  Toggle to <%= article.status === 'Draft' ? 'Active' : 'Draft' %>
+                </button>
+              </form>
+            </td>
+        </tr>
+        <% }) %>
+      <% } %>
+    </tbody>
+  </table>
 <div>
-  <% if(articles.length > pagination.limit) { %>
-    <% for (let i = 1; i <= pagination.totalPages; i++) { %>
-      <a href="?page=<%= i %>&<%= new URLSearchParams(filters).toString() %>">
-        <%= i === pagination.page ? `<strong>${i}</strong>` : i %>
-      </a>
-    <% } %>
-  <% } %>
-</div>
+
 <script>
   function setBulkAction(action) {
     document.getElementById('bulk-action-type').value = action;

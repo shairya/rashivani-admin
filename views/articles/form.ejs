@@ -3,8 +3,14 @@
 <form method="POST" action="/admin/articles/save" enctype="multipart/form-data">
   <% if (article) { %>
     <input type="hidden" name="id" value="<%= article.id %>">
+    <div class="mb-3">
+      <label class="form-label">Select Language:</label>
+      <select name="languageCode">
+        <option value="en" <%= article?.languageCode === 'en' ? 'selected' : '' %>>English</option>
+        <option value="hi" <%= article?.languageCode === 'hi' ? 'selected' : '' %>>Hindi</option>
+      </select>
+    </div>
   <% } %>
-
   <div class="mb-3">
     <label class="form-label">Article Name</label>
     <input type="text" name="name" class="form-control"  value="<%= article?.name || '' %>" required>
