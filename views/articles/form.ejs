@@ -525,6 +525,7 @@
               <input
                 type="text"
                 name="schemaType"
+                id="schemaType"
                 value="<%= article ? article.schemaType : '' %>"
                 class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 outline-none hover:border-indigo-400"
                 placeholder="e.g., Article, BlogPosting"
@@ -598,6 +599,10 @@
     console.error(error);
   });
   ClassicEditor.create(document.querySelector('#metaDescription')).catch(error => {
+    console.error(error);
+  });
+
+  ClassicEditor.create(document.querySelector('#schemaType')).catch(error => {
     console.error(error);
   });
 

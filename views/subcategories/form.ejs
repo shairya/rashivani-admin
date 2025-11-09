@@ -267,6 +267,7 @@
             <input
               type="text"
               name="schemaType"
+              id="schemaType"
               value="<%= subcategory ? subcategory.schemaType : '' %>"
               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 outline-none hover:border-indigo-400"
               placeholder="e.g., CollectionPage, ItemList"
@@ -310,6 +311,24 @@
   });
   
   ClassicEditor.create(document.querySelector("#fullDescription"), {
+    toolbar: ['heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', '|', 'undo', 'redo']
+  }).catch((error) => {
+    console.error(error);
+  });
+
+  ClassicEditor.create(document.querySelector("#metaDescription"), {
+    toolbar: ['heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', '|', 'undo', 'redo']
+  }).catch((error) => {
+    console.error(error);
+  });
+
+  ClassicEditor.create(document.querySelector("#ogDescription"), {
+    toolbar: ['heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', '|', 'undo', 'redo']
+  }).catch((error) => {
+    console.error(error);
+  });
+
+  ClassicEditor.create(document.querySelector("#schemaType"), {
     toolbar: ['heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', '|', 'undo', 'redo']
   }).catch((error) => {
     console.error(error);
