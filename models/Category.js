@@ -18,7 +18,7 @@ const Category = sequelize.define(
     ogTitle: { type: DataTypes.STRING },
     ogDescription: { type: DataTypes.STRING },
     ogImage: { type: DataTypes.STRING },
-    canonicalUrl: { type: DataTypes.STRING },
+    canonicalUrl: { type: DataTypes.STRING, unique: true },
     schemaType: { type: DataTypes.STRING },
     status: {
       type: DataTypes.ENUM(...CATEGORY_STATUSES),

@@ -100,20 +100,26 @@ router.post(
         metaKeywords,
         ogTitle,
         ogDescription,
-        canonicalUrl,
         schemaType,
+        imagePath,
+        ogImagePath,
         status,
       } = req.body;
+
       const slug = slugify(name, { lower: true });
-
+      const canonicalUrl = "https://www.rashivani.com/" + slug;
       // Extract file paths
-      const imagePath = req.files.image?.[0]?.originalname
-        ? `/uploads/Categories/${name}/${req.files.image[0].originalname}`
-        : null;
+      if (req.files.image?.[0]?.originalname) {
+        imagePath = req.files.image?.[0]?.originalname
+          ? `/uploads/Categories/${name}/${req.files.image[0].originalname}`
+          : null;
+      }
 
-      const ogImagePath = req.files.ogImage?.[0]?.originalname
-        ? `/uploads/Categories/${name}/${req.files.ogImage[0].originalname}`
-        : null;
+      if (req.files.ogImage?.[0]?.originalname) {
+        ogImagePath = req.files.ogImage?.[0]?.originalname
+          ? `/uploads/Categories/${name}/${req.files.ogImage[0].originalname}`
+          : null;
+      }
 
       // Prepare data
       const categoryData = {
@@ -126,7 +132,7 @@ router.post(
         metaKeywords,
         ogTitle,
         ogDescription,
-        canonicalUrl,
+        canonicalUrl: canonicalUrl,
         schemaType,
         status,
         image: imagePath,
@@ -236,7 +242,7 @@ router.post(
     const ogImagePath = req.files.ogImage?.[0]?.originalname
       ? `/uploads/Sub-categories/${name}/${req.files.ogImage[0].originalname}`
       : null;
-
+    console.log(schemaType);
     if (id) {
       try {
         await SubCategory.update(
