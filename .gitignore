@@ -1,13 +1,6 @@
 .gitignore
 
 node_modules/
-<<<<<<< HEAD
 seeders/
 
 public/uploads/
-=======
-
-public/uploads/
-
-seeders/
->>>>>>> e72259502149f1b0127130fa9572f748e28bf73d

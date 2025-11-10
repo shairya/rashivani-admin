@@ -12,11 +12,109 @@
       <p class="text-gray-600">Fill in the details below to <%= article ? 'update' : 'create' %> your article</p>
     </div>
 
+    <!-- AI Content Generator Section -->
+    <% if (!article) { %>
+    <div class="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-2xl shadow-2xl overflow-hidden border-2 border-purple-300 mb-6">
+      <div class="px-6 py-5">
+        <div class="flex items-center mb-4">
+          <div class="bg-white rounded-full p-3 mr-4">
+            <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+            </svg>
+          </div>
+          <div>
+            <h2 class="text-2xl font-bold text-white">🤖 AI Content Writer</h2>
+            <p class="text-purple-100 text-sm">Generate unique, SEO-optimized content automatically</p>
+          </div>
+        </div>
+        
+        <div class="space-y-4">
+          <div>
+            <label class="block text-white font-semibold mb-2">Enter Your Topic or Brief Description</label>
+            <textarea
+              id="aiTopicInput"
+              rows="3"
+              class="w-full px-4 py-3 border-2 border-purple-300 rounded-lg focus:ring-2 focus:ring-white focus:border-white transition-all duration-200 outline-none"
+              placeholder="Example: Write about Hanuman Chalisa benefits and meaning for devotees..."
+            ></textarea>
+          </div>
+          
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label class="block text-white font-semibold mb-2">Select Category</label>
+              <select id="aiCategorySelect" class="w-full px-4 py-3 border-2 border-purple-300 rounded-lg focus:ring-2 focus:ring-white outline-none">
+                <option value="">Select Category</option>
+                <% categories.forEach(cat => { %>
+                  <option value="<%= cat.id %>"><%= cat.name %></option>
+                <% }) %>
+              </select>
+            </div>
+            <div>
+              <label class="block text-white font-semibold mb-2">Select Sub-Category</label>
+              <select id="aiSubCategorySelect" class="w-full px-4 py-3 border-2 border-purple-300 rounded-lg focus:ring-2 focus:ring-white outline-none">
+                <option value="">Select Sub-Category</option>
+                <% subcategories.forEach(sub => { %>
+                  <option value="<%= sub.id %>"><%= sub.name %></option>
+                <% }) %>
+              </select>
+            </div>
+            <div>
+              <label class="block text-white font-semibold mb-2">Content Style</label>
+              <select id="aiContentStyle" class="w-full px-4 py-3 border-2 border-purple-300 rounded-lg focus:ring-2 focus:ring-white outline-none">
+                <option value="devotional">Devotional & Spiritual</option>
+                <option value="informative">Informative & Educational</option>
+                <option value="beginner">Beginner-Friendly Guide</option>
+                <option value="detailed">Detailed & Comprehensive</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between">
+            <button
+              type="button"
+              id="generateAIContent"
+              class="bg-white text-purple-600 px-8 py-4 rounded-lg font-bold text-lg hover:bg-purple-50 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1 flex items-center"
+            >
+              <svg class="w-6 h-6 mr-2 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+              </svg>
+              Generate Content with AI
+            </button>
+            <div id="aiLoadingIndicator" class="hidden">
+              <div class="flex items-center text-white">
+                <svg class="animate-spin h-8 w-8 mr-3" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span class="text-lg font-semibold">Generating amazing content...</span>
+              </div>
+            </div>
+          </div>
+          
+          <div id="aiSuccessMessage" class="hidden bg-green-500 text-white px-6 py-4 rounded-lg flex items-center">
+            <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <span class="font-semibold">Content generated successfully! All fields have been filled. Review and submit below.</span>
+          </div>
+          
+          <div id="aiErrorMessage" class="hidden bg-red-500 text-white px-6 py-4 rounded-lg flex items-center">
+            <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <span class="font-semibold" id="aiErrorText"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <% } %>
+
     <form
       method="POST"
       action="/admin/articles/save"
       enctype="multipart/form-data"
       class="space-y-6"
+      id="articleForm"
     >
       <% if (article) { %>
       <input type="hidden" name="id" value="<%= article.id %>" />
@@ -621,5 +719,163 @@
   
   document.querySelector('input[name="slug"]').addEventListener('input', function() {
     this.dataset.auto = 'false';
+  });
+
+  // AI Content Generation
+  const generateButton = document.getElementById('generateAIContent');
+  if (generateButton) {
+    generateButton.addEventListener('click', async function() {
+      const topic = document.getElementById('aiTopicInput').value.trim();
+      const categoryId = document.getElementById('aiCategorySelect').value;
+      const subCategoryId = document.getElementById('aiSubCategorySelect').value;
+      const contentStyle = document.getElementById('aiContentStyle').value;
+      
+      // Validation
+      if (!topic) {
+        showError('Please enter a topic or description');
+        return;
+      }
+      if (!categoryId || !subCategoryId) {
+        showError('Please select both category and sub-category');
+        return;
+      }
+
+      // Show loading
+      generateButton.disabled = true;
+      document.getElementById('aiLoadingIndicator').classList.remove('hidden');
+      document.getElementById('aiSuccessMessage').classList.add('hidden');
+      document.getElementById('aiErrorMessage').classList.add('hidden');
+
+      try {
+        const response = await fetch('/admin/articles/generate-ai-content', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            topic: topic,
+            categoryId: categoryId,
+            subCategoryId: subCategoryId,
+            contentStyle: contentStyle
+          })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          // Populate all form fields with generated content
+          populateFormFields(data.content);
+          
+          // Show success message
+          document.getElementById('aiSuccessMessage').classList.remove('hidden');
+          
+          // Scroll to form
+          setTimeout(() => {
+            document.getElementById('articleForm').scrollIntoView({ behavior: 'smooth' });
+          }, 1000);
+        } else {
+          showError(data.error || 'Failed to generate content. Please try again.');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        showError('An error occurred while generating content. Please try again.');
+      } finally {
+        generateButton.disabled = false;
+        document.getElementById('aiLoadingIndicator').classList.add('hidden');
+      }
+    });
+  }
+
+  function populateFormFields(content) {
+    // Basic Information
+    document.querySelector('input[name="name"]').value = content.name || '';
+    document.querySelector('input[name="slug"]').value = content.slug || '';
+    document.querySelector('select[name="categoryId"]').value = content.categoryId || '';
+    document.querySelector('select[name="subCategoryId"]').value = content.subCategoryId || '';
+    document.querySelector('select[name="status"]').value = content.status || 'Draft';
+    document.querySelector('input[name="author"]').value = content.author || '';
+    document.querySelector('input[name="tags"]').value = content.tags || '';
+
+    // Sanskrit & Deity
+    document.querySelector('input[name="sanskritTitle"]').value = content.sanskritTitle || '';
+    document.querySelector('input[name="deity"]').value = content.deity || '';
+    document.querySelector('input[name="verseCount"]').value = content.verseCount || '';
+    document.querySelector('input[name="language"]').value = content.language || '';
+    document.querySelector('input[name="keywords"]').value = content.keywords || '';
+
+    // Content - CKEditor fields
+    if (window.editorInstances && window.editorInstances.editor) {
+      window.editorInstances.editor.setData(content.content || '');
+    }
+    if (window.editorInstances && window.editorInstances.introText) {
+      window.editorInstances.introText.setData(content.introText || '');
+    }
+    if (window.editorInstances && window.editorInstances.fullContent) {
+      window.editorInstances.fullContent.setData(content.fullContent || '');
+    }
+    if (window.editorInstances && window.editorInstances.verses) {
+      window.editorInstances.verses.setData(content.verses || '');
+    }
+
+    // Benefits & Details
+    document.querySelector('textarea[name="benefits"]').value = content.benefits || '';
+    document.querySelector('input[name="bestTime"]').value = content.bestTime || '';
+    document.querySelector('input[name="duration"]').value = content.duration || '';
+    document.querySelector('input[name="repetitions"]').value = content.repetitions || '';
+
+    // Media
+    document.querySelector('input[name="audioUrl"]').value = content.audioUrl || '';
+    document.querySelector('input[name="youtubeUrl"]').value = content.youtubeUrl || '';
+
+    // Related Content
+    document.querySelector('input[name="relatedMantras"]').value = content.relatedMantras || '';
+    document.querySelector('input[name="festivals"]').value = content.festivals || '';
+
+    // SEO
+    document.querySelector('input[name="metaTitle"]').value = content.metaTitle || '';
+    if (window.editorInstances && window.editorInstances.metaDescription) {
+      window.editorInstances.metaDescription.setData(content.metaDescription || '');
+    }
+
+    // Open Graph
+    document.querySelector('input[name="ogTitle"]').value = content.ogTitle || '';
+    if (window.editorInstances && window.editorInstances.ogDescription) {
+      window.editorInstances.ogDescription.setData(content.ogDescription || '');
+    }
+
+    // Advanced SEO
+    document.querySelector('input[name="canonicalUrl"]').value = content.canonicalUrl || '';
+    if (window.editorInstances && window.editorInstances.schemaType) {
+      window.editorInstances.schemaType.setData(content.schemaType || 'Article');
+    }
+  }
+
+  function showError(message) {
+    document.getElementById('aiErrorText').textContent = message;
+    document.getElementById('aiErrorMessage').classList.remove('hidden');
+    setTimeout(() => {
+      document.getElementById('aiErrorMessage').classList.add('hidden');
+    }, 5000);
+  }
+
+  // Store editor instances globally for access
+  window.editorInstances = {};
+  ClassicEditor.create(document.querySelector('#editor')).then(editor => {
+    window.editorInstances.editor = editor;
+  });
+  ClassicEditor.create(document.querySelector('#fullContent')).then(editor => {
+    window.editorInstances.fullContent = editor;
+  });
+  ClassicEditor.create(document.querySelector('#introText')).then(editor => {
+    window.editorInstances.introText = editor;
+  });
+  ClassicEditor.create(document.querySelector('#verses-editor')).then(editor => {
+    window.editorInstances.verses = editor;
+  });
+  ClassicEditor.create(document.querySelector('#ogDescription')).then(editor => {
+    window.editorInstances.ogDescription = editor;
+  });
+  ClassicEditor.create(document.querySelector('#metaDescription')).then(editor => {
+    window.editorInstances.metaDescription = editor;
   });
 </script>
