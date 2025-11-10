@@ -264,13 +264,13 @@
           </div>
           <div>
             <label class="block text-sm font-semibold text-gray-700 mb-2">Schema Type</label>
-            <input
+            <textarea
               type="text"
               name="schemaType"
-              value="<%= subcategory ? subcategory.schemaType : '' %>"
+              id="schemaType"
               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 outline-none hover:border-indigo-400"
               placeholder="e.g., CollectionPage, ItemList"
-            />
+            ><%= subcategory ? subcategory.schemaType : '' %></textarea>
             <p class="text-xs text-gray-500 mt-1">Schema.org markup type for structured data</p>
           </div>
         </div>
@@ -314,6 +314,24 @@
   }).catch((error) => {
     console.error(error);
   });
+
+  ClassicEditor.create(document.querySelector("#metaDescription"), {
+    toolbar: ['heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', '|', 'undo', 'redo']
+  }).catch((error) => {
+    console.error(error);
+  });
+
+  ClassicEditor.create(document.querySelector("#ogDescription"), {
+    toolbar: ['heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', '|', 'undo', 'redo']
+  }).catch((error) => {
+    console.error(error);
+  });
+
+  ClassicEditor.create(document.querySelector("#schemaType"), {
+    toolbar: ['heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', '|', 'undo', 'redo']
+  }).catch((error) => {
+    console.error(error);
+  });
   
   // Auto-generate slug from name
   document.querySelector('input[name="name"]').addEventListener('input', function(e) {
@@ -326,9 +344,20 @@
       slugField.value = slug;
       slugField.dataset.auto = 'true';
     }
+
+    const canonicalUrlField = document.querySelector('input[name="canonicalUrl"]');
+    const s = e.target.value
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '');
+    canonicalUrlField.value = 'https://www.rashivani.com/' + s;
+    canonicalUrlField.dataset.auto = 'true';
   });
   
   document.querySelector('input[name="slug"]').addEventListener('input', function() {
+    this.dataset.auto = 'false';
+  });
+  document.querySelector('input[name="canonicalUrl"]').addEventListener('input', function() {
     this.dataset.auto = 'false';
   });
 </script>

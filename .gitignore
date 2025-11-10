@@ -1,6 +1,9 @@
 .gitignore
 
 node_modules/
-seeders/
+
 
 public/uploads/
+
+seeders/
+
