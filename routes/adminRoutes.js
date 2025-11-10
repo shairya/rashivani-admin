@@ -20,106 +20,13 @@ const uploadArticleImages = createUploadMiddleware("Articles");
 const uploadCsvFile = require("../middleware/upload");
 
 const uploadCategoryCsv = uploadCsvFile("Category");
+const uploadSubCategoryCsv = uploadCsvFile("SubCategory");
 
 const csv = require("csv-parser");
 const fs = require("fs");
 const path = require("path");
 const { Sequelize } = require("sequelize");
 const sequelize = require("../config/db");
-
-router.post(
-  "/categories/bulk-upload-save",
-  uploadCategoryCsv.fields([{ name: "csvFile", maxCount: 1 }]),
-  auth,
-  rbac(["admin"]),
-  async (req, res) => {
-    const file = req.files?.csvFile?.[0];
-    const filePath = file?.path;
-    if (!filePath) return res.status(400).send("CSV file is required.");
-
-    const rows = [];
-    const skipped = [];
-
-    try {
-      fs.createReadStream(filePath)
-        .pipe(csv())
-        .on("data", (row) => rows.push(row))
-        .on("end", async () => {
-          const transaction = await sequelize.transaction();
-
-          try {
-            for (const [index, data] of rows.entries()) {
-              const { name, slug, status } = data;
-
-              // Validate required fields
-              if (!name || !slug || !status) {
-                skipped.push({
-                  index: index + 1,
-                  reason: "Missing required fields",
-                });
-                continue;
-              }
-
-              // Check for duplicates
-              const exists = await Category.findOne({
-                where: {
-                  [Sequelize.Op.or]: [{ name }, { slug }],
-                },
-                transaction,
-              });
-
-              if (exists) {
-                skipped.push({
-                  index: index + 1,
-                  reason: "Duplicate name or slug",
-                });
-                continue;
-              }
-
-              // Create category
-              await Category.create(
-                {
-                  name,
-                  slug,
-                  status,
-                  image: data.image,
-                  shortDescription: data.shortDescription,
-                  fullDescription: data.fullDescription,
-                  metaTitle: data.metaTitle,
-                  metaDescription: data.metaDescription,
-                  metaKeywords: data.metaKeywords,
-                  ogTitle: data.ogTitle,
-                  ogDescription: data.ogDescription,
-                  ogImage: data.ogImage,
-                  canonicalUrl: data.canonicalUrl,
-                  schemaType: data.schemaType,
-                },
-                { transaction }
-              );
-            }
-
-            await transaction.commit();
-            fs.unlinkSync(filePath);
-
-            const message = skipped.length
-              ? `Upload completed with ${skipped.length} skipped rows.`
-              : "All categories uploaded successfully.";
-
-            res.redirect(
-              `/admin/categories?message=${encodeURIComponent(message)}`
-            );
-          } catch (err) {
-            await transaction.rollback();
-            console.error("Transaction failed:", err);
-            res.status(500).send("Failed to save categories.");
-          }
-        });
-    } catch (err) {
-      console.error("CSV parsing error:", err);
-      res.status(500).send("Error processing CSV file.");
-    }
-  }
-);
 
 router.get("/", auth, rbac(["admin"]), async (req, res) => {
   const userCount = await User.count();
@@ -158,16 +65,6 @@ router.get("/categories", auth, rbac(["admin"]), async (req, res) => {
     active: "categories",
     hideSidebar: false,
     categories,
-  });
-});
-
-router.get("/categories/bulk-upload", auth, rbac(["admin"]), (req, res) => {
-  res.render("categories/bulkuploadform", {
-    layout: "layout",
-    title: "Upload Categories",
-    hideSidebar: false,
-    category: null,
-    active: "categories",
   });
 });
 
@@ -264,6 +161,110 @@ router.post(
       console.error("Error saving category:", error);
       req.flash("error", "Failed to save category.");
       res.redirect("/admin/categories");
+    }
+  }
+);
+
+router.get("/categories/bulk-upload", auth, rbac(["admin"]), (req, res) => {
+  res.render("categories/bulkuploadform", {
+    layout: "layout",
+    title: "Upload Categories",
+    hideSidebar: false,
+    category: null,
+    active: "categories",
+  });
+});
+
+router.post(
+  "/categories/bulk-upload-save",
+  uploadCategoryCsv.fields([{ name: "csvFile", maxCount: 1 }]),
+  auth,
+  rbac(["admin"]),
+  async (req, res) => {
+    const file = req.files?.csvFile?.[0];
+    const filePath = file?.path;
+    if (!filePath) return res.status(400).send("CSV file is required.");
+
+    const rows = [];
+    const skipped = [];
+
+    try {
+      fs.createReadStream(filePath)
+        .pipe(csv())
+        .on("data", (row) => rows.push(row))
+        .on("end", async () => {
+          const transaction = await sequelize.transaction();
+
+          try {
+            for (const [index, data] of rows.entries()) {
+              const { name, slug, status } = data;
+
+              // Validate required fields
+              if (!name || !slug || !status) {
+                skipped.push({
+                  index: index + 1,
+                  reason: "Missing required fields",
+                });
+                continue;
+              }
+
+              // Check for duplicates
+              const exists = await Category.findOne({
+                where: {
+                  [Sequelize.Op.or]: [{ name }, { slug }],
+                },
+                transaction,
+              });
+
+              if (exists) {
+                skipped.push({
+                  index: index + 1,
+                  reason: "Duplicate name or slug",
+                });
+                continue;
+              }
+
+              // Create category
+              await Category.create(
+                {
+                  name,
+                  slug,
+                  status,
+                  image: data.image,
+                  shortDescription: data.shortDescription,
+                  fullDescription: data.fullDescription,
+                  metaTitle: data.metaTitle,
+                  metaDescription: data.metaDescription,
+                  metaKeywords: data.metaKeywords,
+                  ogTitle: data.ogTitle,
+                  ogDescription: data.ogDescription,
+                  ogImage: data.ogImage,
+                  canonicalUrl: data.canonicalUrl,
+                  schemaType: data.schemaType,
+                },
+                { transaction }
+              );
+            }
+
+            await transaction.commit();
+            fs.unlinkSync(filePath);
+
+            const message = skipped.length
+              ? `Upload completed with ${skipped.length} skipped rows.`
+              : "All categories uploaded successfully.";
+
+            res.redirect(
+              `/admin/categories?message=${encodeURIComponent(message)}`
+            );
+          } catch (err) {
+            await transaction.rollback();
+            console.error("Transaction failed:", err);
+            res.status(500).send("Failed to save categories.");
+          }
+        });
+    } catch (err) {
+      console.error("CSV parsing error:", err);
+      res.status(500).send("Error processing CSV file.");
     }
   }
 );
@@ -405,6 +406,111 @@ router.post(
     }
     req.flash("success", "SubCategory saved successfully!");
     res.redirect("/admin/subcategories");
+  }
+);
+
+router.get("/subcategories/bulk-upload", auth, rbac(["admin"]), (req, res) => {
+  res.render("subcategories/bulkuploadform", {
+    layout: "layout",
+    title: "Upload Sub-Categories",
+    hideSidebar: false,
+    category: null,
+    active: "subcategories",
+  });
+});
+
+router.post(
+  "/subcategories/bulk-upload-save",
+  uploadSubCategoryCsv.fields([{ name: "csvFile", maxCount: 1 }]),
+  auth,
+  rbac(["admin"]),
+  async (req, res) => {
+    const file = req.files?.csvFile?.[0];
+    const filePath = file?.path;
+    if (!filePath) return res.status(400).send("CSV file is required.");
+
+    const rows = [];
+    const skipped = [];
+
+    try {
+      fs.createReadStream(filePath)
+        .pipe(csv())
+        .on("data", (row) => rows.push(row))
+        .on("end", async () => {
+          const transaction = await sequelize.transaction();
+
+          try {
+            for (const [index, data] of rows.entries()) {
+              const { name, slug, status } = data;
+
+              // Validate required fields
+              if (!name || !slug || !status) {
+                skipped.push({
+                  index: index + 1,
+                  reason: "Missing required fields",
+                });
+                continue;
+              }
+
+              // Check for duplicates
+              const exists = await SubCategory.findOne({
+                where: {
+                  [Sequelize.Op.or]: [{ name }, { slug }],
+                },
+                transaction,
+              });
+
+              if (exists) {
+                skipped.push({
+                  index: index + 1,
+                  reason: "Duplicate name or slug",
+                });
+                continue;
+              }
+
+              // Create sub-category
+              await SubCategory.create(
+                {
+                  name,
+                  slug,
+                  status,
+                  categoryId: data.categoryId,
+                  image: data.image,
+                  shortDescription: data.shortDescription,
+                  fullDescription: data.fullDescription,
+                  metaTitle: data.metaTitle,
+                  metaDescription: data.metaDescription,
+                  metaKeywords: data.metaKeywords,
+                  ogTitle: data.ogTitle,
+                  ogDescription: data.ogDescription,
+                  ogImage: data.ogImage,
+                  canonicalUrl: data.canonicalUrl,
+                  schemaType: data.schemaType,
+                },
+                { transaction }
+              );
+            }
+
+            await transaction.commit();
+            fs.unlinkSync(filePath);
+
+            const message = skipped.length
+              ? `Upload completed with ${skipped.length} skipped rows.`
+              : "All categories uploaded successfully.";
+
+            res.redirect(
+              `/admin/subcategories?message=${encodeURIComponent(message)}`
+            );
+          } catch (err) {
+            await transaction.rollback();
+            console.error("Transaction failed:", err);
+            res.status(500).send("Failed to save categories.");
+          }
+        });
+    } catch (err) {
+      console.error("CSV parsing error:", err);
+      res.status(500).send("Error processing CSV file.");
+    }
   }
 );
 
