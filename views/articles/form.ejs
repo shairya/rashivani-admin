@@ -1,717 +1,463 @@
 <!-- File: views/articles/form.ejs -->
-
-<div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <!-- Header -->
-    <div class="mb-8">
-      <h1 class="text-4xl font-bold text-gray-900 mb-2">
-        <span class="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-          <%= title %>
-        </span>
+<div class="form-page-wrapper">
+  <!-- Page Header -->
+  <div class="form-page-header">
+    <div>
+      <h1 class="form-page-title">
+        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+        </svg>
+        <%= title %>
       </h1>
-      <p class="text-gray-600">Fill in the details below to <%= article ? 'update' : 'create' %> your article</p>
+      <p class="form-page-subtitle">Fill in the details below to <%= article ? 'update' : 'create' %> your article</p>
     </div>
+    <a href="/admin/articles" class="action-btn action-btn-secondary">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="19" y1="12" x2="5" y2="12"></line>
+        <polyline points="12 19 5 12 12 5"></polyline>
+      </svg>
+      Back to List
+    </a>
+  </div>
 
-    <!-- AI Content Generator Section -->
-    <% if (!article) { %>
-    <div class="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-2xl shadow-2xl overflow-hidden border-2 border-purple-300 mb-6">
-      <div class="px-6 py-5">
-        <div class="flex items-center mb-4">
-          <div class="bg-white rounded-full p-3 mr-4">
-            <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
-            </svg>
-          </div>
-          <div>
-            <h2 class="text-2xl font-bold text-white">🤖 AI Content Writer</h2>
-            <p class="text-purple-100 text-sm">Generate unique, SEO-optimized content automatically</p>
-          </div>
-        </div>
-        
-        <div class="space-y-4">
-          <div>
-            <label class="block text-white font-semibold mb-2">Enter Your Topic or Brief Description</label>
-            <textarea
-              id="aiTopicInput"
-              rows="3"
-              class="w-full px-4 py-3 border-2 border-purple-300 rounded-lg focus:ring-2 focus:ring-white focus:border-white transition-all duration-200 outline-none"
-              placeholder="Example: Write about Hanuman Chalisa benefits and meaning for devotees..."
-            ></textarea>
-          </div>
-          
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <label class="block text-white font-semibold mb-2">Select Category</label>
-              <select id="aiCategorySelect" class="w-full px-4 py-3 border-2 border-purple-300 rounded-lg focus:ring-2 focus:ring-white outline-none">
-                <option value="">Select Category</option>
-                <% categories.forEach(cat => { %>
-                  <option value="<%= cat.id %>"><%= cat.name %></option>
-                <% }) %>
-              </select>
-            </div>
-            <div>
-              <label class="block text-white font-semibold mb-2">Select Sub-Category</label>
-              <select id="aiSubCategorySelect" class="w-full px-4 py-3 border-2 border-purple-300 rounded-lg focus:ring-2 focus:ring-white outline-none">
-                <option value="">Select Sub-Category</option>
-                <% subcategories.forEach(sub => { %>
-                  <option value="<%= sub.id %>"><%= sub.name %></option>
-                <% }) %>
-              </select>
-            </div>
-            <div>
-              <label class="block text-white font-semibold mb-2">Content Style</label>
-              <select id="aiContentStyle" class="w-full px-4 py-3 border-2 border-purple-300 rounded-lg focus:ring-2 focus:ring-white outline-none">
-                <option value="devotional">Devotional & Spiritual</option>
-                <option value="informative">Informative & Educational</option>
-                <option value="beginner">Beginner-Friendly Guide</option>
-                <option value="detailed">Detailed & Comprehensive</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="flex items-center justify-between">
-            <button
-              type="button"
-              id="generateAIContent"
-              class="bg-white text-purple-600 px-8 py-4 rounded-lg font-bold text-lg hover:bg-purple-50 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1 flex items-center"
-            >
-              <svg class="w-6 h-6 mr-2 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-              </svg>
-              Generate Content with AI
-            </button>
-            <div id="aiLoadingIndicator" class="hidden">
-              <div class="flex items-center text-white">
-                <svg class="animate-spin h-8 w-8 mr-3" viewBox="0 0 24 24">
-                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle>
-                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                <span class="text-lg font-semibold">Generating amazing content...</span>
-              </div>
-            </div>
-          </div>
-          
-          <div id="aiSuccessMessage" class="hidden bg-green-500 text-white px-6 py-4 rounded-lg flex items-center">
-            <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-            </svg>
-            <span class="font-semibold">Content generated successfully! All fields have been filled. Review and submit below.</span>
-          </div>
-          
-          <div id="aiErrorMessage" class="hidden bg-red-500 text-white px-6 py-4 rounded-lg flex items-center">
-            <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-            </svg>
-            <span class="font-semibold" id="aiErrorText"></span>
-          </div>
-        </div>
+  <!-- AI Content Generator Section -->
+  <% if (!article) { %>
+  <div class="ai-generator-card">
+    <div class="ai-generator-header">
+      <div class="ai-generator-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="5"></circle>
+          <line x1="12" y1="1" x2="12" y2="3"></line>
+          <line x1="12" y1="21" x2="12" y2="23"></line>
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+          <line x1="1" y1="12" x2="3" y2="12"></line>
+          <line x1="21" y1="12" x2="23" y2="12"></line>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        </svg>
+      </div>
+      <div>
+        <h2>🤖 AI Content Writer</h2>
+        <p>Generate unique, SEO-optimized content automatically</p>
       </div>
     </div>
+    
+    <div class="ai-generator-body">
+      <div class="form-group-modern">
+        <label>Enter Your Topic or Brief Description</label>
+        <textarea
+          id="aiTopicInput"
+          rows="3"
+          class="form-input-modern"
+          placeholder="Example: Write about Hanuman Chalisa benefits and meaning for devotees..."
+        ></textarea>
+      </div>
+      
+      <div class="form-grid-3">
+        <div class="form-group-modern">
+          <label>Select Category</label>
+          <select id="aiCategorySelect" class="form-input-modern">
+            <option value="">Select Category</option>
+            <% categories.forEach(cat => { %>
+              <option value="<%= cat.id %>"><%= cat.name %></option>
+            <% }) %>
+          </select>
+        </div>
+        <div class="form-group-modern">
+          <label>Select Sub-Category</label>
+          <select id="aiSubCategorySelect" class="form-input-modern">
+            <option value="">Select Sub-Category</option>
+            <% subcategories.forEach(sub => { %>
+              <option value="<%= sub.id %>"><%= sub.name %></option>
+            <% }) %>
+          </select>
+        </div>
+        <div class="form-group-modern">
+          <label>Content Style</label>
+          <select id="aiContentStyle" class="form-input-modern">
+            <option value="devotional">Devotional & Spiritual</option>
+            <option value="informative">Informative & Educational</option>
+            <option value="beginner">Beginner-Friendly Guide</option>
+            <option value="detailed">Detailed & Comprehensive</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="ai-generator-actions">
+        <button type="button" id="generateAIContent" class="ai-generate-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+          </svg>
+          Generate Content with AI
+        </button>
+        <div id="aiLoadingIndicator" class="ai-loading hidden">
+          <div class="spinner"></div>
+          <span>Generating amazing content...</span>
+        </div>
+      </div>
+      
+      <div id="aiSuccessMessage" class="alert-success hidden">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+        <span>Content generated successfully! All fields have been filled. Review and submit below.</span>
+      </div>
+      
+      <div id="aiErrorMessage" class="alert-error hidden">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+        <span id="aiErrorText"></span>
+      </div>
+    </div>
+  </div>
+  <% } %>
+
+  <form method="POST" action="/admin/articles/save" enctype="multipart/form-data" id="articleForm" class="article-form">
+    <% if (article) { %>
+    <input type="hidden" name="id" value="<%= article.id %>" />
     <% } %>
 
-    <form
-      method="POST"
-      action="/admin/articles/save"
-      enctype="multipart/form-data"
-      class="space-y-6"
-      id="articleForm"
-    >
-      <% if (article) { %>
-      <input type="hidden" name="id" value="<%= article.id %>" />
-      <% } %>
-<!-- =======
-<h2><%= title %></h2>
-<form method="POST" action="/admin/articles/save" enctype="multipart/form-data">
-  <% if (article) { %>
-    <input type="hidden" name="id" value="<%= article.id %>">
-    <div class="mb-3">
-      <label class="form-label">Select Language:</label>
-      <select name="languageCode">
-        <option value="en" <%= article?.languageCode === 'en' ? 'selected' : '' %>>English</option>
-        <option value="hi" <%= article?.languageCode === 'hi' ? 'selected' : '' %>>Hindi</option>
-      </select>
+    <!-- Basic Information -->
+    <div class="form-section-card">
+      <div class="form-section-header header-blue">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="16" x2="12" y2="12"></line>
+          <line x1="12" y1="8" x2="12.01" y2="8"></line>
+        </svg>
+        <h2>Basic Information</h2>
+      </div>
+      <div class="form-section-body">
+        <div class="form-grid-2">
+          <div class="form-group-modern">
+            <label>Article Name <span class="required">*</span></label>
+            <input type="text" name="name" value="<%= article?.name || '' %>" required class="form-input-modern" placeholder="Enter article name" />
+          </div>
+          <div class="form-group-modern">
+            <label>Slug <span class="required">*</span></label>
+            <input type="text" name="slug" value="<%= article?.slug || '' %>" required class="form-input-modern" placeholder="auto-generated-slug" />
+          </div>
+        </div>
+
+        <div class="form-grid-3">
+          <div class="form-group-modern">
+            <label>Category <span class="required">*</span></label>
+            <select name="categoryId" required class="form-input-modern">
+              <option value="">Select Category</option>
+              <% categories.forEach(cat => { %>
+                <option value="<%= cat.id %>" <%= article?.categoryId === cat.id ? 'selected' : '' %>><%= cat.name %></option>
+              <% }) %>
+            </select>
+          </div>
+          <div class="form-group-modern">
+            <label>Sub-Category <span class="required">*</span></label>
+            <select name="subCategoryId" required class="form-input-modern">
+              <option value="">Select Sub-Category</option>
+              <% subcategories.forEach(sub => { %>
+                <option value="<%= sub.id %>" <%= article?.subCategoryId === sub.id ? 'selected' : '' %>><%= sub.name %></option>
+              <% }) %>
+            </select>
+          </div>
+          <div class="form-group-modern">
+            <label>Status</label>
+            <select name="status" class="form-input-modern">
+              <option value="Draft" <%= article?.status === 'Draft' ? 'selected' : '' %>>📝 Draft</option>
+              <option value="Active" <%= article?.status === 'Active' ? 'selected' : '' %>>✅ Active</option>
+              <option value="InActive" <%= article?.status === 'InActive' ? 'selected' : '' %>>⭕ Inactive</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-grid-2">
+          <div class="form-group-modern">
+            <label>Author Name</label>
+            <input type="text" name="author" value="<%= article?.author || '' %>" class="form-input-modern" placeholder="Enter author name" />
+          </div>
+          <div class="form-group-modern">
+            <label>Tags (comma-separated)</label>
+            <input type="text" name="tags" value="<%= article?.tags || '' %>" class="form-input-modern" placeholder="tag1, tag2, tag3" />
+          </div>
+        </div>
+      </div>
     </div>
-  <% } %>
-  <div class="mb-3">
-    <label class="form-label">Article Name</label>
-    <input type="text" name="name" class="form-control"  value="<%= article?.name || '' %>" required>
-  </div>
-  
-  <div class="mb-3">
-    <label class="form-label">Slug:</label>
-    <input type="text" class="form-control" name="slug" value="<%= article?.slug || '' %>" required>
-  </div>
->>>>>>> 14cf732a356e337f6f12f840189d8c55a2b96855 -->
 
-      <!-- Basic Information Card -->
-      <div class="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-200 hover:shadow-xl transition-shadow duration-300">
-        <div class="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4">
-          <h2 class="text-xl font-semibold text-white flex items-center">
-            <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-            </svg>
-            Basic Information
-          </h2>
+    <!-- Sanskrit & Deity Information -->
+    <div class="form-section-card">
+      <div class="form-section-header header-orange">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+        </svg>
+        <h2>Sanskrit & Deity Information</h2>
+      </div>
+      <div class="form-section-body">
+        <div class="form-grid-2">
+          <div class="form-group-modern">
+            <label>Sanskrit Title</label>
+            <input type="text" name="sanskritTitle" value="<%= article?.sanskritTitle || '' %>" class="form-input-modern" placeholder="Enter Sanskrit title" />
+          </div>
+          <div class="form-group-modern">
+            <label>Deity</label>
+            <input type="text" name="deity" value="<%= article?.deity || '' %>" class="form-input-modern" placeholder="Enter deity name" />
+          </div>
         </div>
-        <div class="p-6 space-y-6">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label class="block text-sm font-semibold text-gray-700 mb-2">
-                Article Name <span class="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                name="name"
-                value="<%= article?.name || '' %>"
-                required
-                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 outline-none hover:border-blue-400"
-                placeholder="Enter article name"
-              />
-            </div>
-            <div>
-              <label class="block text-sm font-semibold text-gray-700 mb-2">
-                Slug <span class="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                name="slug"
-                value="<%= article?.slug || '' %>"
-                required
-                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 outline-none hover:border-blue-400"
-                placeholder="auto-generated-slug"
-              />
-            </div>
-          </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div>
-              <label class="block text-sm font-semibold text-gray-700 mb-2">
-                Category <span class="text-red-500">*</span>
-              </label>
-              <select
-                name="categoryId"
-                required
-                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 outline-none hover:border-blue-400 appearance-none bg-white"
-              >
-                <option value="">Select Category</option>
-                <% categories.forEach(cat => { %>
-                  <option value="<%= cat.id %>" <%= article?.categoryId === cat.id ? 'selected' : '' %>><%= cat.name %></option>
-                <% }) %>
-              </select>
-            </div>
-            <div>
-              <label class="block text-sm font-semibold text-gray-700 mb-2">
-                Sub-Category <span class="text-red-500">*</span>
-              </label>
-              <select
-                name="subCategoryId"
-                required
-                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 outline-none hover:border-blue-400 appearance-none bg-white"
-              >
-                <option value="">Select Sub-Category</option>
-                <% subcategories.forEach(sub => { %>
-                  <option value="<%= sub.id %>" <%= article?.subCategoryId === sub.id ? 'selected' : '' %>><%= sub.name %></option>
-                <% }) %>
-              </select>
-            </div>
-            <div>
-              <label class="block text-sm font-semibold text-gray-700 mb-2">Status</label>
-              <select
-                name="status"
-                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 outline-none hover:border-blue-400 appearance-none bg-white"
-              >
-                <option value="Draft" <%= article?.status === 'Draft' ? 'selected' : '' %>>📝 Draft</option>
-                <option value="Active" <%= article?.status === 'Active' ? 'selected' : '' %>>🟢 Active</option>
-                <option value="InActive" <%= article?.status === 'InActive' ? 'selected' : '' %>>⭕ Inactive</option>
-              </select>
-            </div>
+        <div class="form-grid-3">
+          <div class="form-group-modern">
+            <label>Verse Count</label>
+            <input type="number" name="verseCount" value="<%= article?.verseCount || '' %>" class="form-input-modern" placeholder="0" />
           </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label class="block text-sm font-semibold text-gray-700 mb-2">Author Name</label>
-              <input
-                type="text"
-                name="author"
-                value="<%= article?.author || '' %>"
-                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 outline-none hover:border-blue-400"
-                placeholder="Enter author name"
-              />
-            </div>
-            <div>
-              <label class="block text-sm font-semibold text-gray-700 mb-2">Tags (comma-separated)</label>
-              <input
-                type="text"
-                name="tags"
-                value="<%= article?.tags || '' %>"
-                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 outline-none hover:border-blue-400"
-                placeholder="tag1, tag2, tag3"
-              />
-            </div>
+          <div class="form-group-modern">
+            <label>Language</label>
+            <input type="text" name="language" value="<%= article?.language || '' %>" class="form-input-modern" placeholder="Sanskrit, Hindi, etc." />
+          </div>
+          <div class="form-group-modern">
+            <label>Keywords</label>
+            <input type="text" name="keywords" value="<%= article?.keywords || '' %>" class="form-input-modern" placeholder="keyword1, keyword2" />
           </div>
         </div>
       </div>
+    </div>
 
-      <!-- Sanskrit & Deity Information Card -->
-      <div class="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-200 hover:shadow-xl transition-shadow duration-300">
-        <div class="bg-gradient-to-r from-orange-600 to-orange-700 px-6 py-4">
-          <h2 class="text-xl font-semibold text-white flex items-center">
-            <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
-            </svg>
-            Sanskrit & Deity Information
-          </h2>
+    <!-- Content Section -->
+    <div class="form-section-card">
+      <div class="form-section-header header-purple">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+        </svg>
+        <h2>Content</h2>
+      </div>
+      <div class="form-section-body">
+        <div class="form-group-modern">
+          <label>Main Content</label>
+          <textarea name="content" id="editor" rows="8" class="form-input-modern" placeholder="Enter main content..."><%= article?.content || '' %></textarea>
         </div>
-        <div class="p-6 space-y-6">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label class="block text-sm font-semibold text-gray-700 mb-2">Sanskrit Title</label>
-              <input
-                type="text"
-                name="sanskritTitle"
-                value="<%= article?.sanskritTitle || '' %>"
-                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 outline-none hover:border-orange-400"
-                placeholder="Enter Sanskrit title"
-              />
-            </div>
-            <div>
-              <label class="block text-sm font-semibold text-gray-700 mb-2">Deity</label>
-              <input
-                type="text"
-                name="deity"
-                value="<%= article?.deity || '' %>"
-                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 outline-none hover:border-orange-400"
-                placeholder="Enter deity name"
-              />
-            </div>
-          </div>
+        <div class="form-group-modern">
+          <label>Intro Text</label>
+          <textarea name="introText" id="introText" rows="4" class="form-input-modern" placeholder="Enter introduction text..."><%= article?.introText || '' %></textarea>
+        </div>
+        <div class="form-group-modern">
+          <label>Full Content</label>
+          <textarea name="fullContent" id="fullContent" rows="8" class="form-input-modern" placeholder="Enter full detailed content..."><%= article?.fullContent || '' %></textarea>
+        </div>
+        <div class="form-group-modern">
+          <label>Verses</label>
+          <textarea name="verses" id="verses-editor" rows="6" class="form-input-modern" placeholder="Enter verses..."><%= article?.verses || '' %></textarea>
+        </div>
+      </div>
+    </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div>
-              <label class="block text-sm font-semibold text-gray-700 mb-2">Verse Count</label>
-              <input
-                type="number"
-                name="verseCount"
-                value="<%= article?.verseCount || '' %>"
-                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 outline-none hover:border-orange-400"
-                placeholder="0"
-              />
-            </div>
-            <div>
-              <label class="block text-sm font-semibold text-gray-700 mb-2">Language</label>
-              <input
-                type="text"
-                name="language"
-                value="<%= article?.language || '' %>"
-                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 outline-none hover:border-orange-400"
-                placeholder="Sanskrit, Hindi, etc."
-              />
-            </div>
-            <div>
-              <label class="block text-sm font-semibold text-gray-700 mb-2">Keywords</label>
-              <input
-                type="text"
-                name="keywords"
-                value="<%= article?.keywords || '' %>"
-                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 outline-none hover:border-orange-400"
-                placeholder="keyword1, keyword2"
-              />
-            </div>
+    <!-- Benefits & Details -->
+    <div class="form-section-card">
+      <div class="form-section-header header-green">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+        <h2>Benefits & Details</h2>
+      </div>
+      <div class="form-section-body">
+        <div class="form-group-modern">
+          <label>Benefits (one per line)</label>
+          <textarea name="benefits" rows="4" class="form-input-modern" placeholder="Enter benefits, one per line"><%= article?.benefits || '' %></textarea>
+        </div>
+        <div class="form-grid-3">
+          <div class="form-group-modern">
+            <label>Best Time</label>
+            <input type="text" name="bestTime" value="<%= article?.bestTime || '' %>" class="form-input-modern" placeholder="e.g., Morning, Evening" />
+          </div>
+          <div class="form-group-modern">
+            <label>Duration</label>
+            <input type="text" name="duration" value="<%= article?.duration || '' %>" class="form-input-modern" placeholder="e.g., 15 minutes" />
+          </div>
+          <div class="form-group-modern">
+            <label>Repetitions</label>
+            <input type="text" name="repetitions" value="<%= article?.repetitions || '' %>" class="form-input-modern" placeholder="e.g., 108 times" />
           </div>
         </div>
       </div>
+    </div>
 
-      <!-- Content Section Card -->
-      <div class="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-200 hover:shadow-xl transition-shadow duration-300">
-        <div class="bg-gradient-to-r from-purple-600 to-purple-700 px-6 py-4">
-          <h2 class="text-xl font-semibold text-white flex items-center">
-            <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-            </svg>
-            Content
-          </h2>
-        </div>
-        <div class="p-6 space-y-6">
-          <div>
-            <label class="block text-sm font-semibold text-gray-700 mb-2">Main Content</label>
-            <textarea
-              name="content"
-              id="editor"
-              rows="8"
-              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 outline-none hover:border-purple-400"
-              placeholder="Enter main content..."
-            ><%= article?.content || '' %></textarea>
+    <!-- Media Section -->
+    <div class="form-section-card">
+      <div class="form-section-header header-pink">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+          <circle cx="8.5" cy="8.5" r="1.5"></circle>
+          <polyline points="21 15 16 10 5 21"></polyline>
+        </svg>
+        <h2>Media</h2>
+      </div>
+      <div class="form-section-body">
+        <div class="form-grid-3">
+          <div class="form-group-modern">
+            <label>Article Image</label>
+            <input type="file" name="imageUrl" accept="image/*" class="form-input-modern file-input" />
           </div>
-          <div>
-            <label class="block text-sm font-semibold text-gray-700 mb-2">Intro Text</label>
-            <textarea
-              name="introText"
-              id="introText"
-              rows="4"
-              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 outline-none hover:border-purple-400"
-              placeholder="Enter introduction text..."
-            ><%= article?.introText || '' %></textarea>
+          <div class="form-group-modern">
+            <label>Audio URL</label>
+            <input type="text" name="audioUrl" value="<%= article?.audioUrl || '' %>" class="form-input-modern" placeholder="https://example.com/audio.mp3" />
           </div>
-          <div>
-            <label class="block text-sm font-semibold text-gray-700 mb-2">Full Content</label>
-            <textarea
-              name="fullContent"
-              id="fullContent"
-              rows="8"
-              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 outline-none hover:border-purple-400"
-              placeholder="Enter full detailed content..."
-            ><%= article?.fullContent || '' %></textarea>
-          </div>
-          <div>
-            <label class="block text-sm font-semibold text-gray-700 mb-2">Verses</label>
-            <textarea
-              name="verses"
-              id="verses-editor"
-              rows="6"
-              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 outline-none hover:border-purple-400"
-              placeholder="Enter verses..."
-            ><%= article?.verses || '' %></textarea>
+          <div class="form-group-modern">
+            <label>YouTube URL</label>
+            <input type="text" name="youtubeUrl" value="<%= article?.youtubeUrl || '' %>" class="form-input-modern" placeholder="https://youtube.com/watch?v=..." />
           </div>
         </div>
       </div>
+    </div>
 
-      <!-- Benefits & Details Card -->
-      <div class="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-200 hover:shadow-xl transition-shadow duration-300">
-        <div class="bg-gradient-to-r from-teal-600 to-teal-700 px-6 py-4">
-          <h2 class="text-xl font-semibold text-white flex items-center">
-            <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
-            </svg>
-            Benefits & Details
-          </h2>
-        </div>
-        <div class="p-6 space-y-6">
-          <div>
-            <label class="block text-sm font-semibold text-gray-700 mb-2">Benefits (one per line)</label>
-            <textarea
-              name="benefits"
-              rows="4"
-              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 outline-none hover:border-teal-400"
-              placeholder="Enter benefits, one per line"
-            ><%= article?.benefits || '' %></textarea>
+    <!-- Related Content -->
+    <div class="form-section-card">
+      <div class="form-section-header header-cyan">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+          <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+        </svg>
+        <h2>Related Content</h2>
+      </div>
+      <div class="form-section-body">
+        <div class="form-grid-2">
+          <div class="form-group-modern">
+            <label>Related Mantras</label>
+            <input type="text" name="relatedMantras" value="<%= article?.relatedMantras || '' %>" class="form-input-modern" placeholder="Comma-separated mantra names" />
           </div>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div>
-              <label class="block text-sm font-semibold text-gray-700 mb-2">Best Time</label>
-              <input
-                type="text"
-                name="bestTime"
-                value="<%= article?.bestTime || '' %>"
-                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 outline-none hover:border-teal-400"
-                placeholder="e.g., Morning, Evening"
-              />
-            </div>
-            <div>
-              <label class="block text-sm font-semibold text-gray-700 mb-2">Duration</label>
-              <input
-                type="text"
-                name="duration"
-                value="<%= article?.duration || '' %>"
-                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 outline-none hover:border-teal-400"
-                placeholder="e.g., 15 minutes"
-              />
-            </div>
-            <div>
-              <label class="block text-sm font-semibold text-gray-700 mb-2">Repetitions</label>
-              <input
-                type="text"
-                name="repetitions"
-                value="<%= article?.repetitions || '' %>"
-                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 outline-none hover:border-teal-400"
-                placeholder="e.g., 108 times"
-              />
-            </div>
+          <div class="form-group-modern">
+            <label>Festivals</label>
+            <input type="text" name="festivals" value="<%= article?.festivals || '' %>" class="form-input-modern" placeholder="Comma-separated festival names" />
           </div>
         </div>
       </div>
+    </div>
 
-      <!-- Media Section Card -->
-      <div class="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-200 hover:shadow-xl transition-shadow duration-300">
-        <div class="bg-gradient-to-r from-rose-600 to-rose-700 px-6 py-4">
-          <h2 class="text-xl font-semibold text-white flex items-center">
-            <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
-            </svg>
-            Media
-          </h2>
+    <!-- SEO Meta Tags -->
+    <div class="form-section-card">
+      <div class="form-section-header header-teal">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="m21 21-4.35-4.35"></path>
+        </svg>
+        <h2>SEO Meta Tags</h2>
+      </div>
+      <div class="form-section-body">
+        <div class="form-group-modern">
+          <label>Meta Title</label>
+          <input type="text" name="metaTitle" value="<%= article?.metaTitle || '' %>" maxlength="60" class="form-input-modern" placeholder="Recommended: 50-60 characters" />
+          <span class="field-hint">Optimal length: 50-60 characters</span>
         </div>
-        <div class="p-6 space-y-6">
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div>
-              <label class="block text-sm font-semibold text-gray-700 mb-2">Article Image</label>
-              <input
-                type="file"
-                name="imageUrl"
-                accept="image/*"
-                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all duration-200 outline-none hover:border-rose-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-rose-50 file:text-rose-700 hover:file:bg-rose-100"
-              />
-            </div>
-            <div>
-              <label class="block text-sm font-semibold text-gray-700 mb-2">Audio URL</label>
-              <input
-                type="text"
-                name="audioUrl"
-                value="<%= article?.audioUrl || '' %>"
-                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all duration-200 outline-none hover:border-rose-400"
-                placeholder="https://example.com/audio.mp3"
-              />
-            </div>
-            <div>
-              <label class="block text-sm font-semibold text-gray-700 mb-2">YouTube URL</label>
-              <input
-                type="text"
-                name="youtubeUrl"
-                value="<%= article?.youtubeUrl || '' %>"
-                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all duration-200 outline-none hover:border-rose-400"
-                placeholder="https://youtube.com/watch?v=..."
-              />
-            </div>
+        <div class="form-group-modern">
+          <label>Meta Description</label>
+          <textarea name="metaDescription" id="metaDescription" rows="3" maxlength="160" class="form-input-modern" placeholder="Recommended: 150-160 characters"><%= article?.metaDescription || '' %></textarea>
+          <span class="field-hint">Optimal length: 150-160 characters</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Open Graph Tags -->
+    <div class="form-section-card">
+      <div class="form-section-header header-rose">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+          <polyline points="15 3 21 3 21 9"></polyline>
+          <line x1="10" y1="14" x2="21" y2="3"></line>
+        </svg>
+        <h2>Open Graph (Social Media)</h2>
+      </div>
+      <div class="form-section-body">
+        <div class="form-grid-2">
+          <div class="form-group-modern">
+            <label>OG Title</label>
+            <input type="text" name="ogTitle" value="<%= article?.ogTitle || '' %>" class="form-input-modern" placeholder="Title for social media sharing" />
+          </div>
+          <div class="form-group-modern">
+            <label>OG Image</label>
+            <input type="file" name="ogImage" accept="image/*" class="form-input-modern file-input" />
+          </div>
+        </div>
+        <div class="form-group-modern">
+          <label>OG Description</label>
+          <textarea name="ogDescription" id="ogDescription" rows="3" class="form-input-modern" placeholder="Description for social media sharing"><%= article?.ogDescription || '' %></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- Advanced SEO & Publishing -->
+    <div class="form-section-card">
+      <div class="form-section-header header-indigo">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+        <h2>Advanced SEO & Publishing</h2>
+      </div>
+      <div class="form-section-body">
+        <div class="form-grid-2">
+          <div class="form-group-modern">
+            <label>Canonical URL</label>
+            <input type="text" name="canonicalUrl" value="<%= article?.canonicalUrl || '' %>" class="form-input-modern" placeholder="https://example.com/article-name" />
+            <span class="field-hint">Specify the preferred URL for this article</span>
+          </div>
+          <div class="form-group-modern">
+            <label>Schema Type</label>
+            <input type="text" name="schemaType" value="<%= article?.schemaType || '' %>" class="form-input-modern" placeholder="e.g., Article, BlogPosting" />
+            <span class="field-hint">Schema.org markup type for structured data</span>
+          </div>
+        </div>
+        <div class="form-grid-2">
+          <div class="form-group-modern">
+            <label>Publish Date</label>
+            <input type="date" name="publishDate" value="<%= article?.publishDate?.toISOString().split('T')[0] || '' %>" class="form-input-modern" />
+          </div>
+          <div class="form-group-modern">
+            <label>Schedule Publish Date</label>
+            <input type="datetime-local" name="scheduledPublishDate" value="<%= article?.scheduledPublishDate?.toISOString().slice(0,16) || '' %>" class="form-input-modern" />
           </div>
         </div>
       </div>
+    </div>
 
-      <!-- Related Content Card -->
-      <div class="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-200 hover:shadow-xl transition-shadow duration-300">
-        <div class="bg-gradient-to-r from-cyan-600 to-cyan-700 px-6 py-4">
-          <h2 class="text-xl font-semibold text-white flex items-center">
-            <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
-            </svg>
-            Related Content
-          </h2>
-        </div>
-        <div class="p-6 space-y-6">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label class="block text-sm font-semibold text-gray-700 mb-2">Related Mantras</label>
-              <input
-                type="text"
-                name="relatedMantras"
-                value="<%= article?.relatedMantras || '' %>"
-                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all duration-200 outline-none hover:border-cyan-400"
-                placeholder="Comma-separated mantra names"
-              />
-            </div>
-            <div>
-              <label class="block text-sm font-semibold text-gray-700 mb-2">Festivals</label>
-              <input
-                type="text"
-                name="festivals"
-                value="<%= article?.festivals || '' %>"
-                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all duration-200 outline-none hover:border-cyan-400"
-                placeholder="Comma-separated festival names"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- SEO Meta Tags Card -->
-      <div class="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-200 hover:shadow-xl transition-shadow duration-300">
-        <div class="bg-gradient-to-r from-green-600 to-green-700 px-6 py-4">
-          <h2 class="text-xl font-semibold text-white flex items-center">
-            <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-            </svg>
-            SEO Meta Tags
-          </h2>
-        </div>
-        <div class="p-6 space-y-6">
-          <div>
-            <label class="block text-sm font-semibold text-gray-700 mb-2">Meta Title</label>
-            <input
-              type="text"
-              name="metaTitle"
-              value="<%= article?.metaTitle || '' %>"
-              maxlength="60"
-              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 outline-none hover:border-green-400"
-              placeholder="Recommended: 50-60 characters"
-            />
-            <p class="text-xs text-gray-500 mt-1">Optimal length: 50-60 characters</p>
-          </div>
-          <div>
-            <label class="block text-sm font-semibold text-gray-700 mb-2">Meta Description</label>
-            <textarea
-              name="metaDescription"
-              id="metaDescription"
-              rows="3"
-              maxlength="160"
-              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 outline-none hover:border-green-400"
-              placeholder="Recommended: 150-160 characters"
-            ><%= article?.metaDescription || '' %></textarea>
-            <p class="text-xs text-gray-500 mt-1">Optimal length: 150-160 characters</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Open Graph Tags Card -->
-      <div class="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-200 hover:shadow-xl transition-shadow duration-300">
-        <div class="bg-gradient-to-r from-pink-600 to-pink-700 px-6 py-4">
-          <h2 class="text-xl font-semibold text-white flex items-center">
-            <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path>
-            </svg>
-            Open Graph (Social Media)
-          </h2>
-        </div>
-        <div class="p-6 space-y-6">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label class="block text-sm font-semibold text-gray-700 mb-2">OG Title</label>
-              <input
-                type="text"
-                name="ogTitle"
-                value="<%= article?.ogTitle || '' %>"
-                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all duration-200 outline-none hover:border-pink-400"
-                placeholder="Title for social media sharing"
-              />
-            </div>
-            <div>
-              <label class="block text-sm font-semibold text-gray-700 mb-2">OG Image</label>
-              <input
-                type="file"
-                name="ogImage"
-                accept="image/*"
-                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all duration-200 outline-none hover:border-pink-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-pink-50 file:text-pink-700 hover:file:bg-pink-100"
-              />
-            </div>
-          </div>
-          <div>
-            <label class="block text-sm font-semibold text-gray-700 mb-2">OG Description</label>
-            <textarea
-              name="ogDescription"
-              id="ogDescription"
-              rows="3"
-              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all duration-200 outline-none hover:border-pink-400"
-              placeholder="Description for social media sharing"
-            ><%= article?.ogDescription || '' %></textarea>
-          </div>
-        </div>
-      </div>
-
-      <!-- Advanced SEO & Publishing Card -->
-      <div class="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-200 hover:shadow-xl transition-shadow duration-300">
-        <div class="bg-gradient-to-r from-indigo-600 to-indigo-700 px-6 py-4">
-          <h2 class="text-xl font-semibold text-white flex items-center">
-            <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-            </svg>
-            Advanced SEO & Publishing
-          </h2>
-        </div>
-        <div class="p-6 space-y-6">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label class="block text-sm font-semibold text-gray-700 mb-2">Canonical URL</label>
-              <input
-                type="text"
-                name="canonicalUrl"
-                value="<%= article?.canonicalUrl || '' %>"
-                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 outline-none hover:border-indigo-400"
-                placeholder="https://example.com/article-name"
-              />
-              <p class="text-xs text-gray-500 mt-1">Specify the preferred URL for this article</p>
-            </div>
-            <div>
-              <label class="block text-sm font-semibold text-gray-700 mb-2">Schema Type</label>
-              <input
-                type="text"
-                name="schemaType"
-                id="schemaType"
-                value="<%= article ? article.schemaType : '' %>"
-                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 outline-none hover:border-indigo-400"
-                placeholder="e.g., Article, BlogPosting"
-              />
-              <p class="text-xs text-gray-500 mt-1">Schema.org markup type for structured data</p>
-            </div>
-          </div>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label class="block text-sm font-semibold text-gray-700 mb-2">Publish Date</label>
-              <input
-                type="date"
-                name="publishDate"
-                value="<%= article?.publishDate?.toISOString().split('T')[0] || '' %>"
-                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 outline-none hover:border-indigo-400"
-              />
-            </div>
-            <div>
-              <label class="block text-sm font-semibold text-gray-700 mb-2">Schedule Publish Date</label>
-              <input
-                type="datetime-local"
-                name="scheduledPublishDate"
-                value="<%= article?.scheduledPublishDate?.toISOString().slice(0,16) || '' %>"
-                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 outline-none hover:border-indigo-400"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Action Buttons -->
-      <div class="flex items-center justify-between bg-white rounded-2xl shadow-lg p-6 border border-gray-200 sticky bottom-4">
-        <a
-          href="/admin/articles"
-          class="btn-secondary flex items-center"
-        >
-          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-          </svg>
-          Cancel
-        </a>
-        <button
-          type="submit"
-          class="btn-primary flex items-center"
-        >
-          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-          </svg>
-          <%= article ? 'Update' : 'Create' %> Article
-        </button>
-      </div>
-    </form>
-  </div>
+    <!-- Submit Actions -->
+    <div class="form-actions-sticky">
+      <a href="/admin/articles" class="action-btn action-btn-secondary">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+        Cancel
+      </a>
+      <button type="submit" class="action-btn action-btn-primary">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+        <%= article ? 'Update' : 'Create' %> Article
+      </button>
+    </div>
+  </form>
 </div>
 
 <script>
-  // Initialize CKEditor for rich text fields
-  ClassicEditor.create(document.querySelector('#editor')).catch(error => {
-    console.error(error);
-  });
-  ClassicEditor.create(document.querySelector('#fullContent')).catch(error => {
-    console.error(error);
-  });
-  ClassicEditor.create(document.querySelector('#introText')).catch(error => {
-    console.error(error);
-  });
-  ClassicEditor.create(document.querySelector('#verses-editor')).catch(error => {
-    console.error(error);
-  });
-  ClassicEditor.create(document.querySelector('#ogDescription')).catch(error => {
-    console.error(error);
-  });
-  ClassicEditor.create(document.querySelector('#metaDescription')).catch(error => {
-    console.error(error);
-  });
+  // Initialize CKEditor
+  window.editorInstances = {};
+  ClassicEditor.create(document.querySelector('#editor')).then(editor => { window.editorInstances.editor = editor; }).catch(error => console.error(error));
+  ClassicEditor.create(document.querySelector('#fullContent')).then(editor => { window.editorInstances.fullContent = editor; }).catch(error => console.error(error));
+  ClassicEditor.create(document.querySelector('#introText')).then(editor => { window.editorInstances.introText = editor; }).catch(error => console.error(error));
+  ClassicEditor.create(document.querySelector('#verses-editor')).then(editor => { window.editorInstances.verses = editor; }).catch(error => console.error(error));
+  ClassicEditor.create(document.querySelector('#ogDescription')).then(editor => { window.editorInstances.ogDescription = editor; }).catch(error => console.error(error));
+  ClassicEditor.create(document.querySelector('#metaDescription')).then(editor => { window.editorInstances.metaDescription = editor; }).catch(error => console.error(error));
 
-  ClassicEditor.create(document.querySelector('#schemaType')).catch(error => {
-    console.error(error);
-  });
-
-  // Auto-generate slug from name
+  // Auto-generate slug
   document.querySelector('input[name="name"]').addEventListener('input', function(e) {
     const slugField = document.querySelector('input[name="slug"]');
     if (!slugField.value || slugField.dataset.auto !== 'false') {
-      const slug = e.target.value
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/(^-|-$)/g, '');
+      const slug = e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
       slugField.value = slug;
       slugField.dataset.auto = 'true';
     }
@@ -730,7 +476,6 @@
       const subCategoryId = document.getElementById('aiSubCategorySelect').value;
       const contentStyle = document.getElementById('aiContentStyle').value;
       
-      // Validation
       if (!topic) {
         showError('Please enter a topic or description');
         return;
@@ -740,7 +485,6 @@
         return;
       }
 
-      // Show loading
       generateButton.disabled = true;
       document.getElementById('aiLoadingIndicator').classList.remove('hidden');
       document.getElementById('aiSuccessMessage').classList.add('hidden');
@@ -749,27 +493,15 @@
       try {
         const response = await fetch('/admin/articles/generate-ai-content', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            topic: topic,
-            categoryId: categoryId,
-            subCategoryId: subCategoryId,
-            contentStyle: contentStyle
-          })
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ topic, categoryId, subCategoryId, contentStyle })
         });
 
         const data = await response.json();
 
         if (response.ok) {
-          // Populate all form fields with generated content
           populateFormFields(data.content);
-          
-          // Show success message
           document.getElementById('aiSuccessMessage').classList.remove('hidden');
-          
-          // Scroll to form
           setTimeout(() => {
             document.getElementById('articleForm').scrollIntoView({ behavior: 'smooth' });
           }, 1000);
@@ -787,7 +519,6 @@
   }
 
   function populateFormFields(content) {
-    // Basic Information
     document.querySelector('input[name="name"]').value = content.name || '';
     document.querySelector('input[name="slug"]').value = content.slug || '';
     document.querySelector('select[name="categoryId"]').value = content.categoryId || '';
@@ -795,59 +526,32 @@
     document.querySelector('select[name="status"]').value = content.status || 'Draft';
     document.querySelector('input[name="author"]').value = content.author || '';
     document.querySelector('input[name="tags"]').value = content.tags || '';
-
-    // Sanskrit & Deity
     document.querySelector('input[name="sanskritTitle"]').value = content.sanskritTitle || '';
     document.querySelector('input[name="deity"]').value = content.deity || '';
     document.querySelector('input[name="verseCount"]').value = content.verseCount || '';
     document.querySelector('input[name="language"]').value = content.language || '';
     document.querySelector('input[name="keywords"]').value = content.keywords || '';
 
-    // Content - CKEditor fields
-    if (window.editorInstances && window.editorInstances.editor) {
-      window.editorInstances.editor.setData(content.content || '');
-    }
-    if (window.editorInstances && window.editorInstances.introText) {
-      window.editorInstances.introText.setData(content.introText || '');
-    }
-    if (window.editorInstances && window.editorInstances.fullContent) {
-      window.editorInstances.fullContent.setData(content.fullContent || '');
-    }
-    if (window.editorInstances && window.editorInstances.verses) {
-      window.editorInstances.verses.setData(content.verses || '');
-    }
+    if (window.editorInstances.editor) window.editorInstances.editor.setData(content.content || '');
+    if (window.editorInstances.introText) window.editorInstances.introText.setData(content.introText || '');
+    if (window.editorInstances.fullContent) window.editorInstances.fullContent.setData(content.fullContent || '');
+    if (window.editorInstances.verses) window.editorInstances.verses.setData(content.verses || '');
 
-    // Benefits & Details
     document.querySelector('textarea[name="benefits"]').value = content.benefits || '';
     document.querySelector('input[name="bestTime"]').value = content.bestTime || '';
     document.querySelector('input[name="duration"]').value = content.duration || '';
     document.querySelector('input[name="repetitions"]').value = content.repetitions || '';
-
-    // Media
     document.querySelector('input[name="audioUrl"]').value = content.audioUrl || '';
     document.querySelector('input[name="youtubeUrl"]').value = content.youtubeUrl || '';
-
-    // Related Content
     document.querySelector('input[name="relatedMantras"]').value = content.relatedMantras || '';
     document.querySelector('input[name="festivals"]').value = content.festivals || '';
-
-    // SEO
     document.querySelector('input[name="metaTitle"]').value = content.metaTitle || '';
-    if (window.editorInstances && window.editorInstances.metaDescription) {
-      window.editorInstances.metaDescription.setData(content.metaDescription || '');
-    }
+    
+    if (window.editorInstances.metaDescription) window.editorInstances.metaDescription.setData(content.metaDescription || '');
 
-    // Open Graph
     document.querySelector('input[name="ogTitle"]').value = content.ogTitle || '';
-    if (window.editorInstances && window.editorInstances.ogDescription) {
-      window.editorInstances.ogDescription.setData(content.ogDescription || '');
-    }
-
-    // Advanced SEO
+    if (window.editorInstances.ogDescription) window.editorInstances.ogDescription.setData(content.ogDescription || '');
     document.querySelector('input[name="canonicalUrl"]').value = content.canonicalUrl || '';
-    if (window.editorInstances && window.editorInstances.schemaType) {
-      window.editorInstances.schemaType.setData(content.schemaType || 'Article');
-    }
   }
 
   function showError(message) {
@@ -857,25 +561,4 @@
       document.getElementById('aiErrorMessage').classList.add('hidden');
     }, 5000);
   }
-
-  // Store editor instances globally for access
-  window.editorInstances = {};
-  ClassicEditor.create(document.querySelector('#editor')).then(editor => {
-    window.editorInstances.editor = editor;
-  });
-  ClassicEditor.create(document.querySelector('#fullContent')).then(editor => {
-    window.editorInstances.fullContent = editor;
-  });
-  ClassicEditor.create(document.querySelector('#introText')).then(editor => {
-    window.editorInstances.introText = editor;
-  });
-  ClassicEditor.create(document.querySelector('#verses-editor')).then(editor => {
-    window.editorInstances.verses = editor;
-  });
-  ClassicEditor.create(document.querySelector('#ogDescription')).then(editor => {
-    window.editorInstances.ogDescription = editor;
-  });
-  ClassicEditor.create(document.querySelector('#metaDescription')).then(editor => {
-    window.editorInstances.metaDescription = editor;
-  });
 </script>
