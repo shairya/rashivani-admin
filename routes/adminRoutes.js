@@ -272,7 +272,7 @@ router.get("/subcategories", auth, rbac(["admin"]), async (req, res) => {
       include: [Category],
       order: [["createdAt", "DESC"]],
     });
-    console.log(subcategories);
+    // console.log(subcategories);
   } catch (error) {
     console.log(error);
   }
@@ -542,7 +542,7 @@ router.get("/articles", auth, rbac(["admin", "editor"]), async (req, res) => {
     order: [[sort, order]],
     limit: parseInt(limit),
     offset: parseInt(offset),
-    logging: console.log,
+    // logging: console.log,
   });
 
   const totalPages = Math.ceil(count / limit);
@@ -569,7 +569,9 @@ router.get(
   async (req, res) => {
     const categories = await Category.findAll();
     const subcategories = await SubCategory.findAll();
-    const media = await ArticleMedia.findAll({ logging: console.log });
+    const media = await ArticleMedia.findAll({
+      /*logging: console.log*/
+    });
     res.render("articles/form", {
       layout: "layout",
       title: "Create Article",
@@ -591,7 +593,9 @@ router.get(
     const article = await Article.findByPk(req.params.id);
     const categories = await Category.findAll();
     const subcategories = await SubCategory.findAll();
-    const media = await ArticleMedia.findAll({ logging: console.log });
+    const media = await ArticleMedia.findAll({
+      // logging: console.log
+    });
     res.render("articles/form", {
       layout: "layout",
       title: "Edit Article",
@@ -615,7 +619,9 @@ router.post(
       const { topic, categoryId, subCategoryId, contentStyle } = req.body;
 
       if (!topic || !categoryId || !subCategoryId) {
-        return res.status(400).json({ error: "Topic, category, and sub-category are required" });
+        return res
+          .status(400)
+          .json({ error: "Topic, category, and sub-category are required" });
       }
 
       // Get category and subcategory names
@@ -623,16 +629,25 @@ router.post(
       const subcategory = await SubCategory.findByPk(subCategoryId);
 
       if (!category || !subcategory) {
-        return res.status(400).json({ error: "Invalid category or sub-category" });
+        return res
+          .status(400)
+          .json({ error: "Invalid category or sub-category" });
       }
 
       // Generate unique, SEO-optimized content
-      const generatedContent = generateAIContent(topic, category, subcategory, contentStyle);
+      const generatedContent = generateAIContent(
+        topic,
+        category,
+        subcategory,
+        contentStyle
+      );
 
       res.json({ success: true, content: generatedContent });
     } catch (error) {
       console.error("AI Content Generation Error:", error);
-      res.status(500).json({ error: "Failed to generate content. Please try again." });
+      res
+        .status(500)
+        .json({ error: "Failed to generate content. Please try again." });
     }
   }
 );
@@ -640,18 +655,18 @@ router.post(
 // AI Content Generator Function
 function generateAIContent(topic, category, subcategory, style) {
   const currentYear = new Date().getFullYear();
-  const currentDate = new Date().toISOString().split('T')[0];
-  
+  const currentDate = new Date().toISOString().split("T")[0];
+
   // Extract main keyword from topic
-  const mainKeyword = topic.split(' ').slice(0, 3).join(' ').toLowerCase();
-  const titleKeyword = topic.split(' ').slice(0, 4).join(' ');
-  
+  const mainKeyword = topic.split(" ").slice(0, 3).join(" ").toLowerCase();
+  const titleKeyword = topic.split(" ").slice(0, 4).join(" ");
+
   // Generate slug
   const slug = slugify(topic, { lower: true, strict: true });
-  
+
   // Generate article name with SEO optimization
   const articleName = `${titleKeyword} - Complete Guide & Benefits ${currentYear}`;
-  
+
   // Determine content based on style
   const styleTemplates = {
     devotional: {
@@ -673,7 +688,7 @@ function generateAIContent(topic, category, subcategory, style) {
       intro: `An in-depth exploration of ${topic}. This detailed guide covers history, meaning, benefits, and advanced practices for serious practitioners.`,
       author: "Acharya Vikram Sharma",
       tags: `${mainKeyword}, detailed guide, comprehensive, advanced, deep knowledge, spiritual wisdom`,
-    }
+    },
   };
 
   const selectedStyle = styleTemplates[style] || styleTemplates.devotional;
@@ -684,17 +699,17 @@ function generateAIContent(topic, category, subcategory, style) {
     slug: slug,
     categoryId: category.id,
     subCategoryId: subcategory.id,
-    status: 'Draft',
+    status: "Draft",
     author: selectedStyle.author,
     tags: selectedStyle.tags,
-    
+
     // Sanskrit & Deity Information
     sanskritTitle: generateSanskritTitle(topic),
     deity: extractDeityName(topic),
     verseCount: Math.floor(Math.random() * 50) + 8,
     language: "Sanskrit, Hindi",
     keywords: `${mainKeyword}, ${category.name.toLowerCase()}, ${subcategory.name.toLowerCase()}, spiritual practice, hindu prayer`,
-    
+
     // Main Content
     content: `<h2>Introduction to ${titleKeyword}</h2>
 <p>${selectedStyle.intro}</p>
@@ -820,7 +835,8 @@ Grants peace of mind and emotional balance`,
 
     // Related Content
     relatedMantras: `${category.name} mantras, Morning prayers, Evening aarti, Meditation practices`,
-    festivals: "All major Hindu festivals, Monthly full moon days, Auspicious occasions",
+    festivals:
+      "All major Hindu festivals, Monthly full moon days, Auspicious occasions",
 
     // SEO Meta Tags
     metaTitle: `${titleKeyword}: Complete Guide, Benefits & Meaning | ${currentYear}`,
@@ -831,7 +847,7 @@ Grants peace of mind and emotional balance`,
     ogDescription: `Learn the sacred practice of ${mainKeyword}. Comprehensive guide with step-by-step instructions, spiritual benefits, and practical tips for beginners and advanced practitioners.`,
 
     // Advanced SEO
-    canonicalUrl: `https://yoursite.com/${category.slug || 'category'}/${slug}`,
+    canonicalUrl: `https://yoursite.com/${category.slug || "category"}/${slug}`,
     schemaType: "Article",
   };
 
@@ -840,29 +856,30 @@ Grants peace of mind and emotional balance`,
 
 function generateSanskritTitle(topic) {
   // Simple Sanskrit title generator
-  const words = topic.toLowerCase().split(' ');
-  if (words.includes('hanuman')) return 'हनुमान चालीसा';
-  if (words.includes('shiva')) return 'शिव स्तोत्रम्';
-  if (words.includes('ganesh')) return 'गणेश स्तुति';
-  if (words.includes('durga')) return 'दुर्गा सप्तशती';
-  if (words.includes('lakshmi')) return 'लक्ष्मी स्तोत्रम्';
-  if (words.includes('krishna')) return 'श्री कृष्ण स्तोत्रम्';
-  if (words.includes('rama')) return 'श्री राम स्तोत्रम्';
-  return 'श्री स्तोत्रम्';
+  const words = topic.toLowerCase().split(" ");
+  if (words.includes("hanuman")) return "हनुमान चालीसा";
+  if (words.includes("shiva")) return "शिव स्तोत्रम्";
+  if (words.includes("ganesh")) return "गणेश स्तुति";
+  if (words.includes("durga")) return "दुर्गा सप्तशती";
+  if (words.includes("lakshmi")) return "लक्ष्मी स्तोत्रम्";
+  if (words.includes("krishna")) return "श्री कृष्ण स्तोत्रम्";
+  if (words.includes("rama")) return "श्री राम स्तोत्रम्";
+  return "श्री स्तोत्रम्";
 }
 
 function extractDeityName(topic) {
   const words = topic.toLowerCase();
-  if (words.includes('hanuman')) return 'Lord Hanuman';
-  if (words.includes('shiva')) return 'Lord Shiva';
-  if (words.includes('ganesh') || words.includes('ganesha')) return 'Lord Ganesha';
-  if (words.includes('durga')) return 'Goddess Durga';
-  if (words.includes('lakshmi')) return 'Goddess Lakshmi';
-  if (words.includes('krishna')) return 'Lord Krishna';
-  if (words.includes('rama')) return 'Lord Rama';
-  if (words.includes('saraswati')) return 'Goddess Saraswati';
-  if (words.includes('vishnu')) return 'Lord Vishnu';
-  return 'Divine Deity';
+  if (words.includes("hanuman")) return "Lord Hanuman";
+  if (words.includes("shiva")) return "Lord Shiva";
+  if (words.includes("ganesh") || words.includes("ganesha"))
+    return "Lord Ganesha";
+  if (words.includes("durga")) return "Goddess Durga";
+  if (words.includes("lakshmi")) return "Goddess Lakshmi";
+  if (words.includes("krishna")) return "Lord Krishna";
+  if (words.includes("rama")) return "Lord Rama";
+  if (words.includes("saraswati")) return "Goddess Saraswati";
+  if (words.includes("vishnu")) return "Lord Vishnu";
+  return "Divine Deity";
 }
 
 router.post(
