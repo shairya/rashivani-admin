@@ -21,6 +21,7 @@ const uploadCsvFile = require("../middleware/upload");
 
 const uploadCategoryCsv = uploadCsvFile("Category");
 const uploadSubCategoryCsv = uploadCsvFile("SubCategory");
+const uploadArticleCsv = uploadCsvFile("Article");
 
 const csv = require("csv-parser");
 const fs = require("fs");
@@ -287,7 +288,7 @@ router.get("/subcategories", auth, rbac(["admin"]), async (req, res) => {
     layout: "layout",
     title: "Sub Categories",
     hideSidebar: false,
-    active: "Dashboard",
+    active: "subcategories ",
     subcategories,
   });
 });
@@ -779,6 +780,132 @@ router.get(
   }
 );
 
+router.get("/articles/bulk-upload", auth, rbac(["admin"]), (req, res) => {
+  res.render("articles/bulkuploadform", {
+    layout: "layout",
+    title: "Upload Articles",
+    hideSidebar: false,
+    category: null,
+    active: "articles",
+  });
+});
+
+router.post(
+  "/articles/bulk-upload-save",
+  uploadArticleCsv.fields([{ name: "csvFile", maxCount: 1 }]),
+  auth,
+  rbac(["admin"]),
+  async (req, res) => {
+    const file = req.files?.csvFile?.[0];
+    const filePath = file?.path;
+    if (!filePath) return res.status(400).send("CSV file is required.");
+
+    const rows = [];
+    const skipped = [];
+
+    try {
+      fs.createReadStream(filePath)
+        .pipe(csv())
+        .on("data", (row) => rows.push(row))
+        .on("end", async () => {
+          const transaction = await sequelize.transaction();
+
+          try {
+            for (const [index, data] of rows.entries()) {
+              const { name, slug, status } = data;
+
+              // Validate required fields
+              if (!name || !slug || !status) {
+                skipped.push({
+                  index: index + 1,
+                  reason: "Missing required fields",
+                });
+                continue;
+              }
+
+              // Check for duplicates
+              const exists = await Article.findOne({
+                where: {
+                  [Sequelize.Op.or]: [{ name }, { slug }],
+                },
+                transaction,
+              });
+
+              if (exists) {
+                skipped.push({
+                  index: index + 1,
+                  reason: "Duplicate name or slug",
+                });
+                continue;
+              }
+
+              // Create Article
+              await Article.create(
+                {
+                  name,
+                  slug,
+                  sanskritTitle: data.sanskritTitle,
+                  deity: data.deity,
+                  verseCount: data.verseCount,
+                  language: data.language,
+                  languageCode: data.languageCode,
+                  benefits: data.benefits,
+                  content: data.content,
+                  tags: data.tags,
+                  author: data.author,
+                  bestTime: data.bestTime,
+                  duration: data.duration,
+                  repetitions: data.repetitions,
+                  verses: data.verses,
+                  fullContent: data.fullContent,
+                  audioUrl: data.audioUrl,
+                  imageUrl: data.imageUrl,
+                  youtubeUrl: data.youtubeUrl,
+                  relatedMantras: data.relatedMantras,
+                  festivals: data.festivals,
+                  keywords: data.keywords,
+                  introText: data.introText,
+                  metaTitle: data.metaTitle,
+                  metaDescription: data.metaDescription,
+                  ogTitle: data.ogTitle,
+                  ogDescription: data.ogDescription,
+                  ogImage: data.ogImage,
+                  canonicalUrl: data.canonicalUrl,
+                  schemaType: data.schemaType,
+                  status: data.status,
+                  publishDate: data.publishDate,
+                  viewCount: data.viewCount,
+                  scheduledPublishDate: data.scheduledPublishDate,
+                  categoryId: data.categoryId,
+                  subCategoryId: data.subCategoryId,
+                },
+                { transaction }
+              );
+            }
+
+            await transaction.commit();
+            fs.unlinkSync(filePath);
+
+            const message = skipped.length
+              ? `Upload completed with ${skipped.length} skipped rows.`
+              : "All articles uploaded successfully.";
+
+            res.redirect(
+              `/admin/articles?message=${encodeURIComponent(message)}`
+            );
+          } catch (err) {
+            await transaction.rollback();
+            console.error("Transaction failed:", err);
+            res.status(500).send("Failed to save articles.");
+          }
+        });
+    } catch (err) {
+      console.error("CSV parsing error:", err);
+      res.status(500).send("Error processing CSV file.");
+    }
+  }
+);
+
 router.post(
   "/articles/toggle-status/:id",
   auth,
@@ -817,6 +944,16 @@ router.post(
     res.redirect("/admin/articles");
   }
 );
+
+router.get("/articles/bulk-upload", auth, rbac(["admin"]), (req, res) => {
+  res.render("articles/bulkuploadform", {
+    layout: "layout",
+    title: "Upload Articles",
+    hideSidebar: false,
+    category: null,
+    active: "articles",
+  });
+});
 
 // Login
 router.get("/login", (req, res) => {
