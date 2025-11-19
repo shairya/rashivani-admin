@@ -115,6 +115,7 @@ router.post(
         status,
       } = req.body;
       const slug = slugify(name, { lower: true });
+      const showInMenu = req.body.showInMenu === "1" ? 1 : 0;
 
       // Extract file paths
       const imagePath = req.files.image?.[0]?.originalname
@@ -138,6 +139,7 @@ router.post(
         ogDescription,
         canonicalUrl,
         schemaType,
+        showInMenu,
         status,
         image: imagePath,
         ogImage: ogImagePath,
@@ -341,7 +343,9 @@ router.post(
       schemaType,
       status,
     } = req.body;
+    console.log("**********************************************************");
     const slug = slugify(name, { lower: true });
+    const showInMenu = req.body.showInMenu === "1" ? 1 : 0;
     // Extract file paths
     const imagePath = req.files.image?.[0]?.originalname
       ? `/uploads/Sub-categories/${name}/${req.files.image[0].originalname}`
@@ -367,6 +371,7 @@ router.post(
             ogDescription,
             canonicalUrl,
             schemaType,
+            showInMenu,
             status,
             image: imagePath,
             ogImage: ogImagePath,
@@ -391,6 +396,7 @@ router.post(
           ogDescription,
           canonicalUrl,
           schemaType,
+          showInMenu,
           status,
           image: imagePath,
           ogImage: ogImagePath,

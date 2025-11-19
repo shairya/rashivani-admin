@@ -20,6 +20,7 @@ const SubCategory = sequelize.define(
     ogImage: { type: DataTypes.STRING },
     canonicalUrl: { type: DataTypes.STRING },
     schemaType: { type: DataTypes.STRING },
+    showInMenu: { type: DataTypes.BOOLEAN },
     status: {
       type: DataTypes.ENUM(...CATEGORY_STATUSES),
       defaultValue: "Draft",
