@@ -2027,7 +2027,7 @@ body {
 
 /* Action Column */
 .action-col {
-  width: 120px;
+  width: 150px;
 }
 
 .action-buttons {
@@ -2046,6 +2046,18 @@ body {
   cursor: pointer;
   transition: all 0.3s ease;
   text-decoration: none;
+}
+
+.btn-preview {
+  background: rgba(0, 150, 136, 0.1);
+  color: #009688;
+}
+
+.btn-preview:hover {
+  background: #009688;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 150, 136, 0.3);
 }
 
 .btn-edit {

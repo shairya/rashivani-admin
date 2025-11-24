@@ -587,6 +587,29 @@ router.get(
 );
 
 router.get(
+  "/articles/preview/:id",
+  auth,
+  rbac(["admin", "editor"]),
+  async (req, res) => {
+    const article = await Article.findByPk(req.params.id, {
+      include: [{ model: Category }, { model: SubCategory }],
+    });
+    
+    if (!article) {
+      return res.status(404).send("Article not found");
+    }
+    
+    res.render("articles/preview", {
+      layout: "layout",
+      title: "Article Preview",
+      article,
+      active: "articles",
+      hideSidebar: false,
+    });
+  }
+);
+
+router.get(
   "/articles/edit/:id",
   auth,
   rbac(["admin", "editor"]),
