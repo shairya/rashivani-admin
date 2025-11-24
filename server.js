@@ -4,6 +4,7 @@ require("./cron/scheduler");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
+const cors = require("cors");
 
 const express = require("express");
 const session = require("express-session");
@@ -20,6 +21,7 @@ app.use(
     saveUninitialized: true,
   })
 );
+app.use(cors());
 app.use(flash());
 
 app.use(cookieParser());

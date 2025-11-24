@@ -115,6 +115,7 @@ router.post(
         status,
       } = req.body;
       const slug = slugify(name, { lower: true });
+      const showInMenu = req.body.showInMenu === "1" ? 1 : 0;
 
       // Extract file paths
       const imagePath = req.files.image?.[0]?.originalname
@@ -138,6 +139,7 @@ router.post(
         ogDescription,
         canonicalUrl,
         schemaType,
+        showInMenu,
         status,
         image: imagePath,
         ogImage: ogImagePath,
@@ -341,7 +343,9 @@ router.post(
       schemaType,
       status,
     } = req.body;
+
     const slug = slugify(name, { lower: true });
+    const showInMenu = req.body.showInMenu === "1" ? 1 : 0;
     // Extract file paths
     const imagePath = req.files.image?.[0]?.originalname
       ? `/uploads/Sub-categories/${name}/${req.files.image[0].originalname}`
@@ -367,6 +371,7 @@ router.post(
             ogDescription,
             canonicalUrl,
             schemaType,
+            showInMenu,
             status,
             image: imagePath,
             ogImage: ogImagePath,
@@ -391,6 +396,7 @@ router.post(
           ogDescription,
           canonicalUrl,
           schemaType,
+          showInMenu,
           status,
           image: imagePath,
           ogImage: ogImagePath,
@@ -949,6 +955,7 @@ router.post(
       ogDescription,
       canonicalUrl,
       schemaType,
+      template,
     } = req.body;
     const slug = slugify(name, { lower: true });
 
@@ -1000,6 +1007,7 @@ router.post(
             ogImage: ogImagePath,
             canonicalUrl,
             schemaType,
+            template,
           },
           { where: { id } }
         );
@@ -1043,6 +1051,7 @@ router.post(
         ogImage: ogImagePath,
         canonicalUrl,
         schemaType,
+        template,
       });
     }
     req.flash("success", "Article saved successfully!");
@@ -1324,6 +1333,32 @@ router.get("/users", auth, rbac(["admin"]), async (req, res) => {
     users,
     hideSidebar: false,
   });
+});
+
+router.get("/menu-categories", async (req, res) => {
+  try {
+    const categories = await Category.findAll({
+      where: {
+        showInMenu: 1,
+        status: "Active",
+      },
+      attributes: ["id", "name", "slug"],
+      include: [
+        {
+          model: SubCategory,
+          where: {
+            showInMenu: 1,
+            status: "Active",
+          },
+          attributes: ["id", "name", "slug"],
+          required: false, // If you want categories even if they have no "menu" subcategories
+        },
+      ],
+    });
+    res.json(categories);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 // CSV

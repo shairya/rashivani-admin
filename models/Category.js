@@ -20,6 +20,7 @@ const Category = sequelize.define(
     ogImage: { type: DataTypes.STRING },
     canonicalUrl: { type: DataTypes.STRING, unique: true },
     schemaType: { type: DataTypes.STRING },
+    showInMenu: { type: DataTypes.BOOLEAN },
     status: {
       type: DataTypes.ENUM(...CATEGORY_STATUSES),
       defaultValue: "Draft",

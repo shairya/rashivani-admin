@@ -166,6 +166,21 @@
             </select>
           </div>
           <div class="form-group-modern">
+            <label>Template <span class="required">*</span></label>
+            <select name="template" required class="form-input-modern">
+              <% 
+              const templates = [
+                { id: 1, name: 'One' },
+                { id: 2, name: 'Two' },
+                { id: 3, name: 'Three' }
+              ];
+
+              templates.forEach(sub => { %>
+                <option value="<%= sub.id %>" <%= article?.template === sub.id ? 'selected' : '' %>><%= sub.name %></option>
+              <% }) %>
+            </select>
+          </div>
+          <div class="form-group-modern">
             <label>Status</label>
             <select name="status" class="form-input-modern">
               <option value="Draft" <%= article?.status === 'Draft' ? 'selected' : '' %>>📝 Draft</option>

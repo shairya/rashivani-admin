@@ -43,6 +43,7 @@ const Article = sequelize.define(
     },
     publishDate: DataTypes.DATE,
     viewCount: { type: DataTypes.INTEGER, defaultValue: 0 },
+    template: DataTypes.INTEGER,
     scheduledPublishDate: { type: DataTypes.DATE, allowNull: true },
     categoryId: { type: DataTypes.INTEGER, allowNull: false },
     subCategoryId: { type: DataTypes.INTEGER, allowNull: false },
