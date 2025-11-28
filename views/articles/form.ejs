@@ -119,13 +119,35 @@
   </div>
   <% } %>
 
+  <!-- Quick Template Switcher -->
+  <div class="form-section-card">
+    <div class="form-section-body">
+      <div class="form-group-modern">
+        <label>Template</label>
+        <select id="templateSwitcher" class="form-input-modern">
+          <% 
+          const quickTemplates = [
+            { id: 1, name: 'One' },
+            { id: 2, name: 'Two' },
+            { id: 3, name: 'Three' }
+          ];
+
+          quickTemplates.forEach(t => { %>
+            <option value="<%= t.id %>" <%= article?.template === t.id ? 'selected' : '' %>><%= t.name %></option>
+          <% }) %>
+        </select>
+        <span class="field-hint">Switch template to reveal the right fields</span>
+      </div>
+    </div>
+  </div>
+
   <form method="POST" action="/admin/articles/save" enctype="multipart/form-data" id="articleForm" class="article-form">
     <% if (article) { %>
     <input type="hidden" name="id" value="<%= article.id %>" />
     <% } %>
 
     <!-- Basic Information -->
-    <div class="form-section-card">
+    <div class="form-section-card" data-template-section="basic">
       <div class="form-section-header header-blue">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="10"></circle>
@@ -136,18 +158,18 @@
       </div>
       <div class="form-section-body">
         <div class="form-grid-2">
-          <div class="form-group-modern">
+          <div class="form-group-modern" data-template-visible="name">
             <label>Article Name <span class="required">*</span></label>
             <input type="text" name="name" value="<%= article?.name || '' %>" required class="form-input-modern" placeholder="Enter article name" />
           </div>
-          <div class="form-group-modern">
+          <div class="form-group-modern" data-template-visible="slug">
             <label>Slug <span class="required">*</span></label>
             <input type="text" name="slug" value="<%= article?.slug || '' %>" required class="form-input-modern" placeholder="auto-generated-slug" />
           </div>
         </div>
 
         <div class="form-grid-3">
-          <div class="form-group-modern">
+          <div class="form-group-modern" data-template-visible="category">
             <label>Category <span class="required">*</span></label>
             <select name="categoryId" required class="form-input-modern">
               <option value="">Select Category</option>
@@ -156,7 +178,7 @@
               <% }) %>
             </select>
           </div>
-          <div class="form-group-modern">
+          <div class="form-group-modern" data-template-visible="subcategory">
             <label>Sub-Category <span class="required">*</span></label>
             <select name="subCategoryId" required class="form-input-modern">
               <option value="">Select Sub-Category</option>
@@ -165,7 +187,7 @@
               <% }) %>
             </select>
           </div>
-          <div class="form-group-modern">
+          <div class="form-group-modern" data-template-visible="template">
             <label>Template <span class="required">*</span></label>
             <select name="template" required class="form-input-modern">
               <% 
@@ -180,7 +202,7 @@
               <% }) %>
             </select>
           </div>
-          <div class="form-group-modern">
+          <div class="form-group-modern" data-template-visible="status">
             <label>Status</label>
             <select name="status" class="form-input-modern">
               <option value="Draft" <%= article?.status === 'Draft' ? 'selected' : '' %>>📝 Draft</option>
@@ -191,11 +213,11 @@
         </div>
 
         <div class="form-grid-2">
-          <div class="form-group-modern">
+          <div class="form-group-modern" data-template-visible="author">
             <label>Author Name</label>
             <input type="text" name="author" value="<%= article?.author || '' %>" class="form-input-modern" placeholder="Enter author name" />
           </div>
-          <div class="form-group-modern">
+          <div class="form-group-modern" data-template-visible="tags">
             <label>Tags (comma-separated)</label>
             <input type="text" name="tags" value="<%= article?.tags || '' %>" class="form-input-modern" placeholder="tag1, tag2, tag3" />
           </div>
@@ -204,7 +226,7 @@
     </div>
 
     <!-- Sanskrit & Deity Information -->
-    <div class="form-section-card">
+    <div class="form-section-card" data-template-section="sanskrit">
       <div class="form-section-header header-orange">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
@@ -242,7 +264,7 @@
     </div>
 
     <!-- Content Section -->
-    <div class="form-section-card">
+    <div class="form-section-card" data-template-section="content">
       <div class="form-section-header header-purple">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -253,19 +275,19 @@
         <h2>Content</h2>
       </div>
       <div class="form-section-body">
-        <div class="form-group-modern">
+        <div class="form-group-modern" data-template-visible="content">
           <label>Main Content</label>
           <textarea name="content" id="editor" rows="8" class="form-input-modern" placeholder="Enter main content..."><%= article?.content || '' %></textarea>
         </div>
-        <div class="form-group-modern">
+        <div class="form-group-modern" data-template-visible="introText">
           <label>Intro Text</label>
           <textarea name="introText" id="introText" rows="4" class="form-input-modern" placeholder="Enter introduction text..."><%= article?.introText || '' %></textarea>
         </div>
-        <div class="form-group-modern">
+        <div class="form-group-modern" data-template-visible="fullContent">
           <label>Full Content</label>
           <textarea name="fullContent" id="fullContent" rows="8" class="form-input-modern" placeholder="Enter full detailed content..."><%= article?.fullContent || '' %></textarea>
         </div>
-        <div class="form-group-modern">
+        <div class="form-group-modern" data-template-visible="verses">
           <label>Verses</label>
           <textarea name="verses" id="verses-editor" rows="6" class="form-input-modern" placeholder="Enter verses..."><%= article?.verses || '' %></textarea>
         </div>
@@ -273,7 +295,7 @@
     </div>
 
     <!-- Benefits & Details -->
-    <div class="form-section-card">
+    <div class="form-section-card" data-template-section="benefits">
       <div class="form-section-header header-green">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="20 6 9 17 4 12"></polyline>
@@ -303,7 +325,7 @@
     </div>
 
     <!-- Media Section -->
-    <div class="form-section-card">
+    <div class="form-section-card" data-template-section="media">
       <div class="form-section-header header-pink">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
@@ -314,15 +336,25 @@
       </div>
       <div class="form-section-body">
         <div class="form-grid-3">
-          <div class="form-group-modern">
+          <div class="form-group-modern" data-template-visible="image">
             <label>Article Image</label>
             <input type="file" name="imageUrl" accept="image/*" class="form-input-modern file-input" />
           </div>
-          <div class="form-group-modern">
+          <div class="form-group-modern" data-template-visible="bigImage">
+            <label>Big Image</label>
+            <input type="file" name="bigImage" accept="image/*" class="form-input-modern file-input" />
+          </div>
+          <div class="form-group-modern" data-template-visible="imageTitle">
+            <label>Image Title</label>
+            <input type="text" name="imageTitle" value="<%= article?.imageTitle || '' %>" class="form-input-modern" placeholder="Enter image title" />
+          </div>
+        </div>
+        <div class="form-grid-2">
+          <div class="form-group-modern" data-template-visible="audio">
             <label>Audio URL</label>
             <input type="text" name="audioUrl" value="<%= article?.audioUrl || '' %>" class="form-input-modern" placeholder="https://example.com/audio.mp3" />
           </div>
-          <div class="form-group-modern">
+          <div class="form-group-modern" data-template-visible="youtube">
             <label>YouTube URL</label>
             <input type="text" name="youtubeUrl" value="<%= article?.youtubeUrl || '' %>" class="form-input-modern" placeholder="https://youtube.com/watch?v=..." />
           </div>
@@ -331,7 +363,7 @@
     </div>
 
     <!-- Related Content -->
-    <div class="form-section-card">
+    <div class="form-section-card" data-template-section="related">
       <div class="form-section-header header-cyan">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
@@ -354,7 +386,7 @@
     </div>
 
     <!-- SEO Meta Tags -->
-    <div class="form-section-card">
+    <div class="form-section-card" data-template-section="seo">
       <div class="form-section-header header-teal">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="11" cy="11" r="8"></circle>
@@ -363,12 +395,12 @@
         <h2>SEO Meta Tags</h2>
       </div>
       <div class="form-section-body">
-        <div class="form-group-modern">
+        <div class="form-group-modern" data-template-visible="metaTitle">
           <label>Meta Title</label>
           <input type="text" name="metaTitle" value="<%= article?.metaTitle || '' %>" maxlength="60" class="form-input-modern" placeholder="Recommended: 50-60 characters" />
           <span class="field-hint">Optimal length: 50-60 characters</span>
         </div>
-        <div class="form-group-modern">
+        <div class="form-group-modern" data-template-visible="metaDescription">
           <label>Meta Description</label>
           <textarea name="metaDescription" id="metaDescription" rows="3" maxlength="160" class="form-input-modern" placeholder="Recommended: 150-160 characters"><%= article?.metaDescription || '' %></textarea>
           <span class="field-hint">Optimal length: 150-160 characters</span>
@@ -377,7 +409,7 @@
     </div>
 
     <!-- Open Graph Tags -->
-    <div class="form-section-card">
+    <div class="form-section-card" data-template-section="og">
       <div class="form-section-header header-rose">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
@@ -405,7 +437,7 @@
     </div>
 
     <!-- Advanced SEO & Publishing -->
-    <div class="form-section-card">
+    <div class="form-section-card" data-template-section="advanced">
       <div class="form-section-header header-indigo">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="3"></circle>
@@ -415,23 +447,23 @@
       </div>
       <div class="form-section-body">
         <div class="form-grid-2">
-          <div class="form-group-modern">
+          <div class="form-group-modern" data-template-visible="canonicalUrl">
             <label>Canonical URL</label>
             <input type="text" name="canonicalUrl" value="<%= article?.canonicalUrl || '' %>" class="form-input-modern" placeholder="https://example.com/article-name" />
             <span class="field-hint">Specify the preferred URL for this article</span>
           </div>
-          <div class="form-group-modern">
+          <div class="form-group-modern" data-template-visible="schemaType">
             <label>Schema Type</label>
             <input type="text" name="schemaType" value="<%= article?.schemaType || '' %>" class="form-input-modern" placeholder="e.g., Article, BlogPosting" />
             <span class="field-hint">Schema.org markup type for structured data</span>
           </div>
         </div>
         <div class="form-grid-2">
-          <div class="form-group-modern">
+          <div class="form-group-modern" data-template-visible="publishDate">
             <label>Publish Date</label>
             <input type="datetime-local" name="publishDate" value="<%= (article?.publishDate instanceof Date && !isNaN(article.publishDate)) ? article.publishDate.toISOString().slice(0,16) : '' %>" class="form-input-modern" />
           </div>
-          <div class="form-group-modern">
+          <div class="form-group-modern" data-template-visible="scheduledPublishDate">
             <label>Schedule Publish Date</label>
             <input type="datetime-local" name="scheduledPublishDate" value="<%= (article?.scheduledPublishDate instanceof Date && !isNaN(article.scheduledPublishDate)) ? article.scheduledPublishDate.toISOString().slice(0,16) : '' %>" class="form-input-modern" />
           </div>
@@ -575,5 +607,107 @@
     setTimeout(() => {
       document.getElementById('aiErrorMessage').classList.add('hidden');
     }, 5000);
+  }
+
+  // Template-driven field visibility
+  const templateSelectField = document.querySelector('select[name="template"]');
+  const templateSwitcher = document.getElementById('templateSwitcher');
+  const templateControlledFields = document.querySelectorAll('[data-template-visible]');
+  const templateControlledSections = document.querySelectorAll('[data-template-section]');
+
+  function toggleFieldVisibility(element, shouldShow) {
+    element.style.display = shouldShow ? '' : 'none';
+    element.classList.toggle('hidden', !shouldShow);
+    element.querySelectorAll('input, select, textarea').forEach(input => {
+      input.disabled = !shouldShow;
+    });
+  }
+
+  function normalizeTemplateValue(templateValue) {
+    const value = (templateValue ?? '').toString().trim().toLowerCase();
+    if (value === "1" || value === "one") return "1";
+    if (value === "2" || value === "two") return "2";
+    if (value === "3" || value === "three") return "3";
+    return value;
+  }
+
+  function applyTemplateVisibility(templateValue) {
+    const normalizedTemplate = normalizeTemplateValue(templateValue);
+    const sectionsByTemplate = {
+      "1": new Set(["basic", "content", "seo", "advanced"]),
+      "2": new Set(["basic", "content", "media", "seo", "advanced"]),
+    };
+
+    const fieldsByTemplate = {
+      "1": new Set([
+        "name",
+        "slug",
+        "category",
+        "subcategory",
+        "template",
+        "status",
+        "tags",
+        "fullContent",
+        "metaTitle",
+        "metaDescription",
+        "canonicalUrl",
+        "schemaType",
+      ]),
+      "2": new Set([
+        "name",
+        "slug",
+        "category",
+        "subcategory",
+        "template",
+        "status",
+        "tags",
+        "fullContent",
+        "metaTitle",
+        "metaDescription",
+        "canonicalUrl",
+        "schemaType",
+        "image",
+        "bigImage",
+        "imageTitle",
+      ]),
+    };
+
+    const allowedSections = sectionsByTemplate[normalizedTemplate];
+    const allowedFields = fieldsByTemplate[normalizedTemplate];
+
+    templateControlledSections.forEach(section => {
+      const sectionKey = section.dataset.templateSection;
+      const showSection = !allowedSections || allowedSections.has(sectionKey);
+      toggleFieldVisibility(section, showSection);
+    });
+
+    templateControlledFields.forEach(field => {
+      const fieldKey = field.dataset.templateVisible;
+      const showField = !allowedFields || allowedFields.has(fieldKey);
+      toggleFieldVisibility(field, showField);
+    });
+  }
+
+  const initializeTemplateVisibility = (value) => applyTemplateVisibility(value || "3");
+
+  if (templateSelectField || templateSwitcher) {
+    const syncTargets = [templateSelectField, templateSwitcher].filter(Boolean);
+
+    if (templateSelectField && templateSwitcher) {
+      templateSwitcher.value = templateSelectField.value || templateSwitcher.value;
+    }
+
+    syncTargets.forEach(selectEl => {
+      selectEl.addEventListener('change', event => {
+        const newValue = event.target.value;
+        syncTargets.forEach(other => {
+          if (other && other !== event.target) other.value = newValue;
+        });
+        applyTemplateVisibility(newValue);
+      });
+    });
+
+    const initialValue = templateSelectField?.value || templateSwitcher?.value;
+    initializeTemplateVisibility(initialValue);
   }
 </script>

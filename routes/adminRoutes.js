@@ -916,6 +916,7 @@ router.post(
   "/articles/save",
   uploadArticleImages.fields([
     { name: "imageUrl", maxCount: 1 },
+    { name: "bigImage", maxCount: 1 },
     { name: "ogImage", maxCount: 1 },
   ]),
   auth,
