@@ -55,5 +55,5 @@ const uploadCsv = (type = "default") => {
   return multer({ storage });
 };
 
-module.exports = createUploadMiddleware;
 module.exports = uploadCsv;
+module.exports = createUploadMiddleware;

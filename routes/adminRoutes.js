@@ -17,6 +17,7 @@ const createUploadMiddleware = require("../middleware/upload");
 const uploadCategoryImages = createUploadMiddleware("Categories");
 const uploadSubcategoryImages = createUploadMiddleware("SubCategories");
 const uploadArticleImages = createUploadMiddleware("Articles");
+const uploadPageImages = createUploadMiddleware("Pages");
 const uploadCsvFile = require("../middleware/upload");
 
 const uploadCategoryCsv = uploadCsvFile("Category");
@@ -549,7 +550,7 @@ router.get("/articles", auth, rbac(["admin", "editor"]), async (req, res) => {
     order: [[sort, order]],
     limit: parseInt(limit),
     offset: parseInt(offset),
-    // logging: console.log,
+    // logging:  .log,
   });
 
   const totalPages = Math.ceil(count / limit);
@@ -656,6 +657,176 @@ router.post(
         .status(500)
         .json({ error: "Failed to generate content. Please try again." });
     }
+  }
+);
+
+// Pages: list
+router.get("/pages", auth, rbac(["admin", "editor"]), async (req, res) => {
+  const {
+    page = 1,
+    limit = 10,
+    sort = "createdAt",
+    order = "DESC",
+  } = req.query;
+  const offset = (page - 1) * limit;
+
+  const where = {}; // Add filters as before
+
+  if (req.query.q && req.query.q.trim() !== "") {
+    where.name = { [Op.like]: `%${req.query.q.trim()}%` };
+  }
+
+  if (req.query.status && req.query.status !== "") {
+    where.status = req.query.status;
+  }
+
+  where.categoryId = 999;
+
+  const { rows: articles, count } = await Article.findAndCountAll({
+    where,
+    include: [{ model: Category }, { model: SubCategory }],
+    order: [[sort, order]],
+    limit: parseInt(limit),
+    offset: parseInt(offset),
+    // logging:  console.log,
+  });
+
+  const totalPages = Math.ceil(count / limit);
+  const categories = await Category.findAll();
+  const subcategories = await SubCategory.findAll();
+
+  res.render("pages/list", {
+    layout: "layout",
+    title: "Pages",
+    active: "pages",
+    articles,
+    categories,
+    subcategories,
+    filters: req.query,
+    pagination: { page: parseInt(page), totalPages, limit },
+    hideSidebar: false,
+  });
+});
+
+router.get("/pages/new", auth, rbac(["admin", "editor"]), async (req, res) => {
+  const categories = await Category.findAll();
+  const subcategories = await SubCategory.findAll();
+  const media = await ArticleMedia.findAll({
+    /*logging: console.log*/
+  });
+  res.render("pages/form", {
+    layout: "layout",
+    title: "Create Page",
+    active: "pages",
+    article: null,
+    categories,
+    subcategories,
+    media,
+    hideSidebar: false,
+  });
+});
+
+router.post(
+  "/pages/save",
+  uploadPageImages.fields([{ name: "imageUrl", maxCount: 1 }]),
+  auth,
+  rbac(["admin", "editor"]),
+  async (req, res) => {
+    const { scheduledPublishDate, ...rest } = req.body;
+    const {
+      id,
+      name,
+      sanskritTitle,
+      content,
+      metaTitle,
+      fullContent,
+      status,
+      previousImage,
+    } = req.body;
+    const slug = slugify(name, { lower: true });
+    const categoryId = 999;
+    const subCategoryId = 999;
+    // Extract file paths
+    const imagePath = req.files.imageUrl?.[0]?.originalname
+      ? `/uploads/Pages/${name}/${req.files.imageUrl[0].originalname}`
+      : previousImage;
+
+    if (id) {
+      try {
+        await Article.update(
+          {
+            name,
+            slug,
+            metaTitle,
+            sanskritTitle,
+            content,
+            fullContent,
+            imageUrl: imagePath,
+            status,
+            categoryId,
+            subCategoryId,
+          },
+          { where: { id } }
+        );
+      } catch (err) {
+        console.log(err);
+      }
+    } else {
+      await Article.create({
+        name,
+        slug,
+        metaTitle,
+        sanskritTitle,
+        content,
+        fullContent,
+        imageUrl: imagePath,
+        status,
+        categoryId,
+        subCategoryId,
+      });
+    }
+    req.flash("success", "Page saved successfully!");
+    res.redirect("/admin/pages");
+  }
+);
+
+router.get(
+  "/pages/edit/:id",
+  auth,
+  rbac(["admin", "editor"]),
+  async (req, res) => {
+    const article = await Article.findByPk(req.params.id);
+    const categories = await Category.findAll();
+    const subcategories = await SubCategory.findAll();
+    const media = await ArticleMedia.findAll({
+      where: { articleId: article.id },
+    });
+
+    res.render("pages/form", {
+      layout: "layout",
+      active: "pages",
+      title: "Edit Page",
+      article,
+      categories,
+      subcategories,
+      media,
+      hideSidebar: false,
+    });
+  }
+);
+
+router.post(
+  "/pages/toggle-status/:id",
+  auth,
+  rbac(["admin", "editor"]),
+  async (req, res) => {
+    const article = await Article.findByPk(req.params.id);
+    if (!article) return res.status(404).send("Page not found");
+
+    const newStatus = article.status === "Draft" ? "Active" : "Draft";
+    await article.update({ status: newStatus });
+
+    res.redirect("/admin/pages");
   }
 );
 

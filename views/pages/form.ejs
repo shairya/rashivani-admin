@@ -1,0 +1,176 @@
+<!-- File: views/articles/form.ejs -->
+<div class="form-page-wrapper">
+  <!-- Page Header -->
+  <div class="form-page-header">
+    <div>
+      <h1 class="form-page-title">
+        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+        </svg>
+        <%= title %>
+      </h1>
+      <p class="form-page-subtitle">Fill in the details below to <%= article ? 'update' : 'create' %> page</p>
+    </div>
+    <a href="/admin/pages" class="action-btn action-btn-secondary">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="19" y1="12" x2="5" y2="12"></line>
+        <polyline points="12 19 5 12 12 5"></polyline>
+      </svg>
+      Back to List
+    </a>
+  </div>
+
+  <form method="POST" action="/admin/pages/save" enctype="multipart/form-data" id="pageForm" class="article-form">
+    <% if (article) { %>
+    <input type="hidden" name="id" value="<%= article.id %>" />
+    <% } %>
+    <input type="hidden" name="aiCategorySelect" value="999" />  
+    <!-- Basic Information -->
+    <div class="form-section-card">
+      <div class="form-section-header header-blue">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="16" x2="12" y2="12"></line>
+          <line x1="12" y1="8" x2="12.01" y2="8"></line>
+        </svg>
+        <h2>Basic Information</h2>
+      </div>
+      <div class="form-section-body">
+        <div class="form-grid-2">
+          <div class="form-group-modern">
+            <label>Page Name <span class="required">*</span></label>
+            <input type="text" name="name" value="<%= article?.name || '' %>" required class="form-input-modern" placeholder="Enter article name" />
+          </div>
+          <div class="form-group-modern">
+            <label>Slug <span class="required">*</span></label>
+            <input type="text" name="slug" value="<%= article?.slug || '' %>" required class="form-input-modern" placeholder="auto-generated-slug" />
+          </div>
+          <div class="form-group-modern">
+            <label>Sub-Title </label>
+            <input type="text" name="sanskritTitle" value="<%= article?.sanskritTitle || '' %>" required class="form-input-modern" placeholder="Enter sub title" />
+          </div>
+          <div class="form-group-modern">
+            <label>Status</label>
+            <select name="status" class="form-input-modern">
+              <option value="Draft" <%= article?.status === 'Draft' ? 'selected' : '' %>>📝 Draft</option>
+              <option value="Active" <%= article?.status === 'Active' ? 'selected' : '' %>>✅ Active</option>
+              <option value="InActive" <%= article?.status === 'InActive' ? 'selected' : '' %>>⭕ Inactive</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Content Section -->
+    <div class="form-section-card">
+      <div class="form-section-header header-purple">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+        </svg>
+        <h2>Content</h2>
+      </div>
+      <div class="form-section-body">
+        <div class="form-group-modern">
+          <label>Main Content</label>
+          <textarea name="content" id="editor" rows="8" class="form-input-modern" placeholder="Enter main content..."><%= article?.content || '' %></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- Media Section -->
+    <div class="form-section-card">
+      <div class="form-section-header header-pink">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+          <circle cx="8.5" cy="8.5" r="1.5"></circle>
+          <polyline points="21 15 16 10 5 21"></polyline>
+        </svg>
+        <h2>Media</h2>
+      </div>
+      <div class="form-section-body">
+        <div class="form-group-modern">
+            <label>Article Image</label>
+            <input type="file" name="imageUrl" accept="image/*" class="form-input-modern file-input" value="<%= article?.imageUrl || '' %>" />
+            <%= article?.imageUrl || '' %>
+            <input type="hidden" name="previousImage" value="<%= article?.imageUrl%>" />
+        </div>
+        <div class="form-group-modern">
+            <label>Image Name</label>
+            <input type="text" name="metaTitle" value="<%= article?.metaTitle || '' %>" class="form-input-modern" placeholder="Enter image name..." />
+        </div>
+        <div class="form-group-modern">
+            <label>Image Description</label>
+            <textarea name="fullContent" id="editor" rows="8" class="form-input-modern" placeholder="Enter image description..."><%= article?.fullContent || '' %></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- Submit Actions -->
+    <div class="form-actions-sticky">
+      <a href="/admin/pages" class="action-btn action-btn-secondary">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+        Cancel
+      </a>
+      <button type="submit" class="action-btn action-btn-primary">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+        <%= article ? 'Update' : 'Create' %> Page
+      </button>
+    </div>
+  </form>
+</div>
+
+<script>
+  // Initialize CKEditor
+  window.editorInstances = {};
+  ClassicEditor.create(document.querySelector('#editor')).then(editor => { window.editorInstances.editor = editor; }).catch(error => console.error(error));
+  ClassicEditor.create(document.querySelector('#fullContent')).then(editor => { window.editorInstances.fullContent = editor; }).catch(error => console.error(error));
+  
+
+  // Auto-generate slug
+  document.querySelector('input[name="name"]').addEventListener('input', function(e) {
+    const slugField = document.querySelector('input[name="slug"]');
+    if (!slugField.value || slugField.dataset.auto !== 'false') {
+      const slug = e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+      slugField.value = slug;
+      slugField.dataset.auto = 'true';
+    }
+  });
+  
+  document.querySelector('input[name="slug"]').addEventListener('input', function() {
+    this.dataset.auto = 'false';
+  });
+
+  // AI Content Generation
+  
+  function populateFormFields(content) {
+    document.querySelector('input[name="name"]').value = content.name || '';
+    document.querySelector('input[name="slug"]').value = content.slug || '';
+    document.querySelector('select[name="categoryId"]').value = content.categoryId || '999';
+    
+    document.querySelector('select[name="status"]').value = content.status || 'Draft';
+    if (window.editorInstances.editor) window.editorInstances.editor.setData(content.content || '');
+    if (window.editorInstances.fullContent) window.editorInstances.fullContent.setData(content.fullContent || '');
+
+
+    
+  }
+
+  function showError(message) {
+    document.getElementById('aiErrorText').textContent = message;
+    document.getElementById('aiErrorMessage').classList.remove('hidden');
+    setTimeout(() => {
+      document.getElementById('aiErrorMessage').classList.add('hidden');
+    }, 5000);
+  }
+</script>
