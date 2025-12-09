@@ -517,6 +517,142 @@ router.post(
 );
 
 // Articles
+// Get article detail based on article ID
+// Assuming you have imported the necessary modules and defined models (Article, Category, SubCategory)
+
+router.get("/article/:id", async (req, res) => {
+  // 1. Get the Article ID from the route parameters
+  const articleId = req.params.id;
+
+  if (!articleId) {
+    return res.status(400).json({
+      status: "error",
+      message: "Article ID is required.",
+    });
+  }
+
+  const where = {};
+
+  // Filter by Status
+  where.status = "Active";
+  try {
+    // 2. Find the article by its Primary Key (ID)
+    const article = await Article.findByPk(articleId, {
+      // Include related models to get full details (like Category and SubCategory names)
+      where,
+      include: [{ model: Category }, { model: SubCategory }],
+      // logging: console.log, // Uncomment for debugging SQL queries
+    });
+
+    // 3. Handle Article Not Found (404)
+    if (!article) {
+      return res.status(404).json({
+        status: "error",
+        message: `Article with ID ${articleId} not found.`,
+      });
+    }
+
+    // 4. Return the article detail as JSON (200 OK)
+    return res.status(200).json({
+      status: "success",
+      message: "Article details retrieved successfully.",
+      data: {
+        article,
+      },
+    });
+  } catch (error) {
+    console.error(`Error fetching article ID ${articleId}:`, error);
+
+    // Return 500 for server/database errors
+    return res.status(500).json({
+      status: "error",
+      message:
+        "An internal server error occurred while retrieving article details.",
+      error: error.message,
+    });
+  }
+});
+
+// list articles APIfor frontend
+router.get("/list-articles", async (req, res) => {
+  // 1. Pagination and Sorting Parameters
+  const {
+    page = 1,
+    limit = 10,
+    sort = "createdAt",
+    order = "DESC",
+    q,
+    category,
+    subcategory,
+  } = req.query;
+
+  const offset = (page - 1) * limit;
+
+  // 2. Build the WHERE clause for Sequelize
+  const where = {};
+
+  // Filter by Search Query
+  if (q && q.trim() !== "") {
+    // [Op.like] needs to be imported from Sequelize, e.g., const { Op } = require('sequelize');
+    where.name = { [Op.like]: `%${q.trim()}%` };
+  }
+
+  // Filter by Status
+  where.status = "Active";
+
+  // Filter by Category (Optional)
+  if (category && category !== "") {
+    where.categoryId = category;
+  }
+
+  // Filter by Subcategory (Optional)
+  if (subcategory && subcategory !== "") {
+    where.subCategoryId = subcategory;
+  }
+
+  try {
+    // 3. Find Articles and Count
+    const { rows: articles, count } = await Article.findAndCountAll({
+      where,
+      include: [{ model: Category }, { model: SubCategory }],
+      order: [[sort, order]],
+      limit: parseInt(limit),
+      offset: parseInt(offset),
+      // logging: console.log, // Uncomment for debugging SQL queries
+    });
+
+    // 4. Calculate Pagination Metadata
+    const totalPages = Math.ceil(count / parseInt(limit));
+    const currentPage = parseInt(page);
+    const articlesPerPage = parseInt(limit);
+
+    // 5. Return the result as JSON
+    return res.status(200).json({
+      status: "success",
+      message: "Articles retrieved successfully.",
+      data: {
+        articles,
+        pagination: {
+          totalArticles: count,
+          totalPages,
+          currentPage,
+          articlesPerPage,
+          // Useful links for client-side pagination
+          // next: currentPage < totalPages ? `/articles?page=${currentPage + 1}&limit=${articlesPerPage}&...` : null,
+          // prev: currentPage > 1 ? `/articles?page=${currentPage - 1}&limit=${articlesPerPage}&...` : null,
+        },
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching articles:", error);
+    return res.status(500).json({
+      status: "error",
+      message: "An internal server error occurred while retrieving articles.",
+      error: error.message,
+    });
+  }
+});
+
 router.get("/articles", auth, rbac(["admin", "editor"]), async (req, res) => {
   const {
     page = 1,
