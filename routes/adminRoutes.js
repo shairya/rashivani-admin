@@ -160,7 +160,7 @@ router.post(
       req.flash("error", "Failed to save category.");
       res.redirect("/admin/categories");
     }
-  }
+  },
 );
 
 router.get("/categories/bulk-upload", auth, rbac(["admin"]), (req, res) => {
@@ -240,7 +240,7 @@ router.post(
                   canonicalUrl: data.canonicalUrl,
                   schemaType: data.schemaType,
                 },
-                { transaction }
+                { transaction },
               );
             }
 
@@ -252,7 +252,7 @@ router.post(
               : "All categories uploaded successfully.";
 
             res.redirect(
-              `/admin/categories?message=${encodeURIComponent(message)}`
+              `/admin/categories?message=${encodeURIComponent(message)}`,
             );
           } catch (err) {
             await transaction.rollback();
@@ -264,7 +264,7 @@ router.post(
       console.error("CSV parsing error:", err);
       res.status(500).send("Error processing CSV file.");
     }
-  }
+  },
 );
 
 // SubCategories
@@ -317,7 +317,7 @@ router.get(
       active: "subcategories",
       hideSidebar: false,
     });
-  }
+  },
 );
 
 router.post(
@@ -377,7 +377,7 @@ router.post(
             image: imagePath,
             ogImage: ogImagePath,
           },
-          { where: { id } }
+          { where: { id } },
         );
       } catch (err) {
         console.log(err);
@@ -408,7 +408,7 @@ router.post(
     }
     req.flash("success", "SubCategory saved successfully!");
     res.redirect("/admin/subcategories");
-  }
+  },
 );
 
 router.get("/subcategories/bulk-upload", auth, rbac(["admin"]), (req, res) => {
@@ -489,7 +489,7 @@ router.post(
                   canonicalUrl: data.canonicalUrl,
                   schemaType: data.schemaType,
                 },
-                { transaction }
+                { transaction },
               );
             }
 
@@ -501,7 +501,7 @@ router.post(
               : "All categories uploaded successfully.";
 
             res.redirect(
-              `/admin/subcategories?message=${encodeURIComponent(message)}`
+              `/admin/subcategories?message=${encodeURIComponent(message)}`,
             );
           } catch (err) {
             await transaction.rollback();
@@ -513,7 +513,7 @@ router.post(
       console.error("CSV parsing error:", err);
       res.status(500).send("Error processing CSV file.");
     }
-  }
+  },
 );
 
 // Articles
@@ -726,7 +726,7 @@ router.get(
       media,
       hideSidebar: false,
     });
-  }
+  },
 );
 
 router.get(
@@ -750,7 +750,7 @@ router.get(
       active: "articles",
       hideSidebar: false,
     });
-  }
+  },
 );
 
 // AI Content Generation API
@@ -783,7 +783,7 @@ router.post(
         topic,
         category,
         subcategory,
-        contentStyle
+        contentStyle,
       );
 
       res.json({ success: true, content: generatedContent });
@@ -793,7 +793,7 @@ router.post(
         .status(500)
         .json({ error: "Failed to generate content. Please try again." });
     }
-  }
+  },
 );
 
 // Pages: list
@@ -902,7 +902,7 @@ router.post(
             categoryId,
             subCategoryId,
           },
-          { where: { id } }
+          { where: { id } },
         );
       } catch (err) {
         console.log(err);
@@ -923,7 +923,7 @@ router.post(
     }
     req.flash("success", "Page saved successfully!");
     res.redirect("/admin/pages");
-  }
+  },
 );
 
 router.get(
@@ -948,7 +948,7 @@ router.get(
       media,
       hideSidebar: false,
     });
-  }
+  },
 );
 
 router.post(
@@ -963,7 +963,7 @@ router.post(
     await article.update({ status: newStatus });
 
     res.redirect("/admin/pages");
-  }
+  },
 );
 
 // AI Content Generator Function
@@ -1293,7 +1293,7 @@ router.post(
             schemaType,
             template,
           },
-          { where: { id } }
+          { where: { id } },
         );
       } catch (err) {
         console.log(err);
@@ -1340,7 +1340,7 @@ router.post(
     }
     req.flash("success", "Article saved successfully!");
     res.redirect("/admin/articles");
-  }
+  },
 );
 
 router.get(
@@ -1364,7 +1364,7 @@ router.get(
       media,
       hideSidebar: false,
     });
-  }
+  },
 );
 
 router.get("/articles/bulk-upload", auth, rbac(["admin"]), (req, res) => {
@@ -1466,7 +1466,7 @@ router.post(
                   categoryId: data.categoryId,
                   subCategoryId: data.subCategoryId,
                 },
-                { transaction }
+                { transaction },
               );
             }
 
@@ -1478,7 +1478,7 @@ router.post(
               : "All articles uploaded successfully.";
 
             res.redirect(
-              `/admin/articles?message=${encodeURIComponent(message)}`
+              `/admin/articles?message=${encodeURIComponent(message)}`,
             );
           } catch (err) {
             await transaction.rollback();
@@ -1490,7 +1490,7 @@ router.post(
       console.error("CSV parsing error:", err);
       res.status(500).send("Error processing CSV file.");
     }
-  }
+  },
 );
 
 router.post(
@@ -1505,7 +1505,7 @@ router.post(
     await article.update({ status: newStatus });
 
     res.redirect("/admin/articles");
-  }
+  },
 );
 
 router.post(
@@ -1524,12 +1524,12 @@ router.post(
     } else if (action === "publish") {
       await Article.update(
         { status: "published" },
-        { where: { id: selectedIds } }
+        { where: { id: selectedIds } },
       );
     }
 
     res.redirect("/admin/articles");
-  }
+  },
 );
 
 router.get("/articles/bulk-upload", auth, rbac(["admin"]), (req, res) => {
@@ -1558,7 +1558,15 @@ router.post("/login", async (req, res) => {
   const user = await User.findOne({ where: { username } });
 
   if (!user || !(await bcrypt.compare(password, user.password))) {
-    return res.status(401).json({ message: "Invalid credentials" });
+    return res.render("login", {
+      layout: "layout",
+      title: "Login",
+      error: "Access denied",
+      message: "Invalid credentials",
+      hideSidebar: true,
+    });
+
+    // return res.status(401).json({ message: "Invalid credentials" });
   }
 
   if (!["admin", "editor"].includes(user.role)) {
